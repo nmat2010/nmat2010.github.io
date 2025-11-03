@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { ChevronDown } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
-import profileImg from "@/assets/profile.jpg";
+import profileImg from "@/assets/profile.jpeg";
 
 export const HeroSection = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -107,19 +107,26 @@ export const HeroSection = () => {
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           {/* Left side - Text content */}
           <div className="animate-fade-in-up">
-            <div className="mb-4 text-accent font-medium flex items-center gap-2">
+            <div className="mb-6 text-accent font-medium flex items-center gap-2">
               <span className="inline-block w-12 h-0.5 bg-accent"></span>
-              <span className="text-white/80">From Hanoi to Stony Brook</span>
+              <span className="text-white/80 uppercase tracking-wider text-sm">Thu Nguyen</span>
             </div>
-            <h1 className="text-6xl md:text-8xl font-bold text-white mb-6 leading-none">
-              Thu Nguyen
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-8 leading-[1.1]">
+              What if AI could{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-secondary">
+                preserve human stories
+              </span>{" "}
+              forever?
             </h1>
             <div className="relative pl-6 border-l-4 border-accent/50 mb-8">
-              <p className="text-xl md:text-2xl text-white/90 leading-relaxed">
-                Building AI-powered solutions for social impact
+              <p className="text-xl md:text-2xl text-white/90 leading-relaxed mb-3">
+                Building technology that amplifies humanity, not replaces it
               </p>
-              <p className="text-lg text-white/70 mt-2">
-                Computer Engineering Sophomore | 2× Hackathon Winner | Future AI/Robotics Researcher
+              <p className="text-lg text-white/70">
+                Computer Engineering @ Stony Brook | 2× Hackathon Winner | Future AI/Robotics Researcher
+              </p>
+              <p className="text-base text-white/60 mt-2 italic">
+                Currently preserving first responder stories for the 9/11 Memorial & Museum
               </p>
             </div>
             

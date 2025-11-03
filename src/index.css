@@ -8,44 +8,45 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 235 25% 15%;
+    /* Mild light mode - warm, soft, easy on the eyes */
+    --background: 35 20% 97%;
+    --foreground: 235 15% 25%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 235 25% 15%;
+    --card: 35 25% 98%;
+    --card-foreground: 235 15% 25%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 235 25% 15%;
+    --popover: 35 25% 98%;
+    --popover-foreground: 235 15% 25%;
 
-    --primary: 235 45% 20%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 235 40% 30%;
+    --primary-foreground: 35 25% 98%;
 
-    --secondary: 189 60% 30%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 189 45% 40%;
+    --secondary-foreground: 35 25% 98%;
 
-    --muted: 220 15% 95%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 35 15% 92%;
+    --muted-foreground: 220 8% 50%;
 
-    --accent: 356 85% 62%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 356 75% 58%;
+    --accent-foreground: 35 25% 98%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 35 25% 98%;
 
-    --border: 220 15% 90%;
-    --input: 220 15% 90%;
-    --ring: 356 85% 62%;
+    --border: 35 15% 88%;
+    --input: 35 15% 88%;
+    --ring: 356 75% 58%;
 
     --radius: 0.75rem;
 
     /* Portfolio-specific tokens */
-    --hero-gradient-start: 235 45% 20%;
-    --hero-gradient-end: 235 35% 12%;
-    --glass-bg: 0 0% 100%;
-    --glass-border: 220 15% 85%;
+    --hero-gradient-start: 235 40% 30%;
+    --hero-gradient-end: 235 35% 20%;
+    --glass-bg: 35 30% 96%;
+    --glass-border: 35 15% 85%;
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --shadow-soft: 0 10px 40px -10px hsl(235 45% 20% / 0.1);
-    --shadow-glow: 0 0 40px hsl(356 85% 62% / 0.15);
+    --shadow-soft: 0 10px 40px -10px hsl(235 40% 30% / 0.08);
+    --shadow-glow: 0 0 40px hsl(356 75% 58% / 0.12);
   }
 
   .dark {
