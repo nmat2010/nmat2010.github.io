@@ -103,91 +103,90 @@ export const HeroSection = () => {
         className="absolute inset-0 pointer-events-none"
       />
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          {/* Left side - Text content */}
-          <div className="animate-fade-in-up">
-            <div className="mb-6 text-accent font-medium flex items-center gap-2">
-              <span className="inline-block w-12 h-0.5 bg-accent"></span>
-              <span className="text-white/80 uppercase tracking-wider text-sm">Thu Nguyen</span>
-            </div>
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-8 leading-[1.1]">
-              What if AI could{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-secondary">
-                preserve human stories
-              </span>{" "}
-              forever?
-            </h1>
-            <div className="relative pl-6 border-l-4 border-accent/50 mb-8">
-              <p className="text-xl md:text-2xl text-white/90 leading-relaxed mb-3">
-                Building technology that amplifies humanity, not replaces it
-              </p>
-              <p className="text-lg text-white/70">
-                Computer Engineering @ Stony Brook | 2× Hackathon Winner | Future AI/Robotics Researcher
-              </p>
-              <p className="text-base text-white/60 mt-2 italic">
-                Currently preserving first responder stories for the 9/11 Memorial & Museum
-              </p>
-            </div>
-            
-            {/* Vietnamese decorative element */}
-            <div className="flex items-center gap-3 mb-8 text-white/60">
-              <span className="text-2xl">🏮</span>
-              <div className="flex gap-1">
-                <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
-                <span className="w-2 h-2 rounded-full bg-secondary animate-pulse delay-75"></span>
-                <span className="w-2 h-2 rounded-full bg-accent animate-pulse delay-150"></span>
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="grid md:grid-cols-2 gap-12 items-center min-h-[80vh]">
+          {/* Left side - Name and intro with Vietnamese motifs */}
+          <div className="space-y-8">
+            {/* Vietnamese decorative element - Lotus flower motif */}
+            <div className="flex items-center gap-4 mb-6">
+              <div className="relative w-16 h-16">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-accent/30 to-secondary/30 animate-pulse"></div>
+                <div className="absolute inset-2 rounded-full bg-gradient-to-br from-accent/20 to-secondary/20 animate-pulse delay-100"></div>
+                <div className="absolute inset-4 rounded-full bg-gradient-to-br from-accent/10 to-secondary/10 animate-pulse delay-200"></div>
               </div>
-              <span className="text-sm">Designing technology with humanity at heart</span>
+              <div className="flex gap-2">
+                <div className="w-2 h-2 rounded-full bg-accent animate-glow-pulse"></div>
+                <div className="w-2 h-2 rounded-full bg-secondary animate-glow-pulse" style={{ animationDelay: '100ms' }}></div>
+                <div className="w-2 h-2 rounded-full bg-accent animate-glow-pulse" style={{ animationDelay: '200ms' }}></div>
+              </div>
             </div>
 
+            <h1 className="text-7xl md:text-8xl lg:text-9xl font-bold text-white leading-none tracking-tight">
+              Thu Nguyen
+            </h1>
+
+            <div className="relative">
+              <p className="text-xl md:text-2xl text-white/90 font-light">
+                Từ Hà Nội đến Stony Brook
+              </p>
+              <p className="text-lg md:text-xl text-white/60 mt-1">
+                From Hanoi to Stony Brook
+              </p>
+              {/* Vietnamese wave pattern */}
+              <div className="absolute -bottom-2 left-0 w-24 h-0.5 bg-gradient-to-r from-accent via-secondary to-transparent"></div>
+            </div>
+
+            <p className="text-lg text-white/80 max-w-xl leading-relaxed">
+              Building AI systems that preserve human stories and amplify human
+              potential, not replace it.
+            </p>
+
             <div className="flex flex-wrap gap-4">
-              <button
-                onClick={() =>
-                  document
-                    .getElementById("projects")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
-                className="px-8 py-3 bg-accent text-white rounded-full font-medium hover:shadow-[0_0_30px_hsl(var(--accent)/0.5)] transition-all hover:scale-105"
+              <a
+                href="#projects"
+                className="group px-8 py-4 bg-accent hover:bg-accent/90 text-white rounded-lg font-medium transition-all duration-300 hover:scale-105 shadow-[var(--shadow-glow)] relative overflow-hidden"
               >
-                View My Work
-              </button>
-              <button
-                onClick={() =>
-                  document
-                    .getElementById("contact")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
-                className="px-8 py-3 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-full font-medium hover:bg-white/20 transition-all hover:scale-105"
+                <span className="relative z-10">View My Work</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+              </a>
+              <a
+                href="#contact"
+                className="px-8 py-4 border-2 border-white/20 hover:border-accent text-white rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-[var(--shadow-soft)]"
               >
                 Get in Touch
-              </button>
+              </a>
             </div>
           </div>
 
-          {/* Right side - Profile image with Vietnamese-inspired decoration */}
-          <div className="relative animate-scale-in">
-            {/* Decorative elements inspired by Vietnamese patterns */}
-            <div className="absolute -top-6 -right-6 w-32 h-32 border-4 border-accent/30 rounded-full"></div>
-            <div className="absolute -bottom-6 -left-6 w-24 h-24 border-4 border-secondary/30 rounded-full"></div>
-            
-            {/* Main image container */}
+          {/* Right side - Profile picture with Vietnamese-inspired decorative elements */}
+          <div className="relative flex justify-center items-center">
             <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-accent to-secondary rounded-2xl opacity-20 blur-2xl animate-glow-pulse" />
-              <div className="relative rounded-2xl overflow-hidden border-4 border-white/10 shadow-2xl">
-                <img
-                  src={profileImg}
-                  alt="Thu Nguyen - Computer Engineering Student"
-                  className="w-full h-auto"
-                />
-                {/* Subtle overlay with Vietnamese-inspired pattern */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-accent/10 via-transparent to-secondary/10 pointer-events-none"></div>
-              </div>
-            </div>
+              {/* Vietnamese bamboo-inspired circular patterns */}
+              <div className="absolute -top-12 -left-12 w-32 h-32 rounded-full border-2 border-accent/20 animate-float"></div>
+              <div className="absolute -top-8 -left-8 w-24 h-24 rounded-full border border-secondary/30 animate-float" style={{ animationDelay: '1s' }}></div>
+              
+              <div className="absolute -bottom-12 -right-12 w-40 h-40 rounded-full border-2 border-secondary/20 animate-float" style={{ animationDelay: '2s' }}></div>
+              <div className="absolute -bottom-8 -right-8 w-32 h-32 rounded-full border border-accent/30 animate-float" style={{ animationDelay: '3s' }}></div>
 
-            {/* Additional decorative accent */}
-            <div className="absolute top-1/2 -right-8 text-6xl opacity-20 animate-float">
-              ✨
+              {/* Profile image with lotus petal frame effect */}
+              <div className="relative z-10">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-accent/30 via-secondary/20 to-transparent blur-2xl"></div>
+                <div className="relative w-80 h-80 rounded-full overflow-hidden border-4 border-accent/30 shadow-[var(--shadow-glow)]">
+                  <img
+                    src={profileImg}
+                    alt="Thu Nguyen"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+
+              {/* Vietnamese star/flower pattern orbits */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 -z-10">
+                <svg className="w-full h-full animate-spin-slow" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="0.1" className="text-accent/20" strokeDasharray="2,4" />
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="0.1" className="text-secondary/20" strokeDasharray="3,3" />
+                </svg>
+              </div>
             </div>
           </div>
         </div>
