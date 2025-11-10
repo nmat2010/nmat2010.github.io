@@ -15,8 +15,8 @@ const latLonToVector3 = (lat: number, lon: number, radius: number) => {
   return new THREE.Vector3(x, y, z);
 };
 
-// Saigon (Ho Chi Minh City) coordinates: 10.8231° N, 106.6297° E
-const SAIGON = { lat: 10.8231, lon: 106.6297 };
+// Hanoi coordinates: 21.0285° N, 105.8542° E
+const HANOI = { lat: 21.0285, lon: 105.8542 };
 // Stony Brook, NY: 40.9125° N, -73.1236° W
 const NEW_YORK = { lat: 40.9125, lon: -73.1236 };
 
@@ -116,17 +116,17 @@ const Earth = ({ onJourneyComplete }: EarthProps) => {
   const [phase, setPhase] = useState<"start" | "journey" | "complete">("start");
   const timeRef = useRef(0);
 
-  const saigonPos = latLonToVector3(SAIGON.lat, SAIGON.lon, 2);
+  const hanoiPos = latLonToVector3(HANOI.lat, HANOI.lon, 2);
   const newYorkPos = latLonToVector3(NEW_YORK.lat, NEW_YORK.lon, 2);
 
   useEffect(() => {
-    // Initial camera position (close to Saigon)
-    camera.position.set(saigonPos.x * 1.5, saigonPos.y * 1.5, saigonPos.z * 1.5);
-    camera.lookAt(saigonPos);
+    // Initial camera position (close to Hanoi)
+    camera.position.set(hanoiPos.x * 1.5, hanoiPos.y * 1.5, hanoiPos.z * 1.5);
+    camera.lookAt(hanoiPos);
 
     // Start the journey after a brief pause
     setTimeout(() => setPhase("journey"), 1000);
-  }, [camera, saigonPos]);
+  }, [camera, hanoiPos]);
 
   useFrame((_, delta) => {
     // Rotate the Earth slowly
@@ -138,15 +138,15 @@ const Earth = ({ onJourneyComplete }: EarthProps) => {
       timeRef.current += delta * 0.3; // Animation speed
 
       if (timeRef.current <= 1) {
-        // Smoothly interpolate camera from Saigon to New York
+        // Smoothly interpolate camera from Hanoi to New York
         const t = easeInOutCubic(timeRef.current);
 
-        const startPos = saigonPos.clone().multiplyScalar(1.5);
+        const startPos = hanoiPos.clone().multiplyScalar(1.5);
         const endPos = newYorkPos.clone().multiplyScalar(1.8);
 
         camera.position.lerpVectors(startPos, endPos, t);
 
-        const lookAtTarget = new THREE.Vector3().lerpVectors(saigonPos, newYorkPos, t);
+        const lookAtTarget = new THREE.Vector3().lerpVectors(hanoiPos, newYorkPos, t);
         camera.lookAt(lookAtTarget);
       } else if (timeRef.current > 1 && timeRef.current <= 2) {
         // Zoom out to show full Earth
@@ -194,13 +194,13 @@ const Earth = ({ onJourneyComplete }: EarthProps) => {
       </mesh>
 
       {/* Location markers */}
-      <LocationMarker position={saigonPos} color="#e94560" />
+      <LocationMarker position={hanoiPos} color="#e94560" />
       <LocationMarker position={newYorkPos} color="#f97068" />
 
       {/* Traveling plane */}
       {phase === "journey" && timeRef.current <= 1 && (
         <TravelingPlane
-          startPos={saigonPos}
+          startPos={hanoiPos}
           endPos={newYorkPos}
           progress={easeInOutCubic(timeRef.current)}
         />
@@ -213,11 +213,11 @@ const Earth = ({ onJourneyComplete }: EarthProps) => {
             const t = i / 49;
             const curveHeight = 0.8;
             const midPoint = new THREE.Vector3()
-              .lerpVectors(saigonPos, newYorkPos, 0.5)
+              .lerpVectors(hanoiPos, newYorkPos, 0.5)
               .normalize()
               .multiplyScalar(2 + curveHeight);
 
-            const curve = new THREE.QuadraticBezierCurve3(saigonPos, midPoint, newYorkPos);
+            const curve = new THREE.QuadraticBezierCurve3(hanoiPos, midPoint, newYorkPos);
             const point = curve.getPoint(t);
 
             return (
@@ -271,7 +271,7 @@ export const GlobeJourney = ({ onComplete }: GlobeJourneyProps) => {
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="text-center text-white">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 animate-fade-in">
-            From Saigon to Stony Brook
+            From Hanoi to Stony Brook
           </h1>
           <p className="text-lg md:text-xl text-white/70 animate-fade-in delay-300">
             A journey of innovation and impact
