@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a2a6c;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4a6fb8;stop-opacity:1" />
+    </linearGradient>
+
+    <linearGradient id="lavenderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#b794f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9f7aea;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Hexagonal frame -->
+  <path d="M 50 10 L 75 25 L 75 50 L 50 65 L 25 50 L 25 25 Z"
+        fill="none"
+        stroke="url(#primaryGrad)"
+        stroke-width="3"/>
+
+  <!-- T shape -->
+  <path d="M 35 28 L 65 28 L 65 33 L 53 33 L 53 50 L 47 50 L 47 33 L 35 33 Z"
+        fill="url(#primaryGrad)"/>
+
+  <!-- N shape -->
+  <path d="M 36 55 L 42 55 L 42 70 L 58 58 L 58 55 L 64 55 L 64 72 L 58 72 L 58 65 L 42 77 L 42 72 L 36 72 Z"
+        fill="url(#lavenderGrad)"/>
+
+  <!-- Central neural node -->
+  <circle cx="50" cy="42" r="3" fill="#b794f6" opacity="0.8"/>
+</svg>

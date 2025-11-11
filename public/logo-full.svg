@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <defs>
+    <!-- Gradients for depth and glow -->
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a2a6c;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2d4a9e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4a6fb8;stop-opacity:1" />
+    </linearGradient>
+
+    <linearGradient id="lavenderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#b794f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9f7aea;stop-opacity:1" />
+    </linearGradient>
+
+    <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#e0d4ff;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#b794f6;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#1a2a6c;stop-opacity:0" />
+    </radialGradient>
+
+    <!-- Shadow filter -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background circle with subtle glow -->
+  <circle cx="400" cy="400" r="380" fill="url(#glowGrad)" opacity="0.3"/>
+
+  <!-- Main geometric frame - hexagonal tech shape -->
+  <path d="M 400 100 L 550 200 L 550 400 L 400 500 L 250 400 L 250 200 Z"
+        fill="none"
+        stroke="url(#primaryGrad)"
+        stroke-width="3"
+        opacity="0.6"/>
+
+  <!-- Inner hexagon -->
+  <path d="M 400 150 L 510 225 L 510 375 L 400 450 L 290 375 L 290 225 Z"
+        fill="none"
+        stroke="#b794f6"
+        stroke-width="2"
+        opacity="0.5"/>
+
+  <!-- Neural network nodes - positioned strategically -->
+  <circle cx="400" cy="300" r="8" fill="#c0c0c0" filter="url(#softGlow)"/>
+  <circle cx="340" cy="260" r="6" fill="#b794f6" opacity="0.8"/>
+  <circle cx="460" cy="260" r="6" fill="#b794f6" opacity="0.8"/>
+  <circle cx="320" cy="340" r="5" fill="#4a6fb8" opacity="0.7"/>
+  <circle cx="480" cy="340" r="5" fill="#4a6fb8" opacity="0.7"/>
+  <circle cx="370" cy="380" r="5" fill="#9f7aea" opacity="0.7"/>
+  <circle cx="430" cy="380" r="5" fill="#9f7aea" opacity="0.7"/>
+
+  <!-- Neural network connections -->
+  <line x1="400" y1="300" x2="340" y2="260" stroke="#b794f6" stroke-width="1.5" opacity="0.4"/>
+  <line x1="400" y1="300" x2="460" y2="260" stroke="#b794f6" stroke-width="1.5" opacity="0.4"/>
+  <line x1="340" y1="260" x2="320" y2="340" stroke="#4a6fb8" stroke-width="1" opacity="0.3"/>
+  <line x1="460" y1="260" x2="480" y2="340" stroke="#4a6fb8" stroke-width="1" opacity="0.3"/>
+  <line x1="400" y1="300" x2="370" y2="380" stroke="#9f7aea" stroke-width="1" opacity="0.3"/>
+  <line x1="400" y1="300" x2="430" y2="380" stroke="#9f7aea" stroke-width="1" opacity="0.3"/>
+
+  <!-- Central monogram - stylized TN with circuit aesthetic -->
+  <g filter="url(#glow)">
+    <!-- T shape with modern geometric style -->
+    <path d="M 340 220 L 460 220 L 460 235 L 410 235 L 410 320 L 390 320 L 390 235 L 340 235 Z"
+          fill="url(#primaryGrad)"/>
+
+    <!-- N shape integrated with circuit lines -->
+    <path d="M 345 350 L 365 350 L 365 415 L 420 360 L 420 350 L 440 350 L 440 430 L 420 430 L 420 370 L 365 425 L 365 430 L 345 430 Z"
+          fill="url(#lavenderGrad)"/>
+  </g>
+
+  <!-- Circuit board traces - elegant minimal lines -->
+  <path d="M 250 200 L 220 180 M 250 400 L 220 420"
+        stroke="#c0c0c0"
+        stroke-width="2"
+        opacity="0.4"
+        stroke-linecap="round"/>
+
+  <path d="M 550 200 L 580 180 M 550 400 L 580 420"
+        stroke="#c0c0c0"
+        stroke-width="2"
+        opacity="0.4"
+        stroke-linecap="round"/>
+
+  <!-- Robotic arm silhouette - subtle right side accent -->
+  <g opacity="0.2">
+    <rect x="560" y="280" width="35" height="8" rx="2" fill="#4a6fb8"/>
+    <rect x="585" y="265" width="8" height="30" rx="2" fill="#4a6fb8"/>
+    <circle cx="589" cy="260" r="6" fill="#b794f6"/>
+    <rect x="593" y="257" width="15" height="3" rx="1" fill="#9f7aea"/>
+    <rect x="593" y="260" width="12" height="3" rx="1" fill="#9f7aea"/>
+  </g>
+
+  <!-- Decorative circuit corners -->
+  <circle cx="250" cy="200" r="4" fill="#b794f6" opacity="0.6"/>
+  <circle cx="550" cy="200" r="4" fill="#b794f6" opacity="0.6"/>
+  <circle cx="250" cy="400" r="4" fill="#4a6fb8" opacity="0.6"/>
+  <circle cx="550" cy="400" r="4" fill="#4a6fb8" opacity="0.6"/>
+
+  <!-- Name typography - clean and modern -->
+  <text x="400" y="520"
+        font-family="'Arial', 'Helvetica', sans-serif"
+        font-size="36"
+        font-weight="300"
+        fill="url(#primaryGrad)"
+        text-anchor="middle"
+        letter-spacing="8">THU NGUYEN</text>
+
+  <!-- Subtitle - specialty -->
+  <text x="400" y="555"
+        font-family="'Arial', 'Helvetica', sans-serif"
+        font-size="14"
+        font-weight="300"
+        fill="#b794f6"
+        text-anchor="middle"
+        letter-spacing="3">AI & ROBOTICS INNOVATOR</text>
+
+  <!-- Energy pulse dots - suggests AI activity -->
+  <g opacity="0.6">
+    <circle cx="400" cy="110" r="3" fill="#e0d4ff">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="420" cy="115" r="2" fill="#b794f6">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="380" cy="115" r="2" fill="#b794f6">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Accent lines for dynamism -->
+  <line x1="300" y1="500" x2="320" y2="490"
+        stroke="#9f7aea"
+        stroke-width="1.5"
+        opacity="0.4"
+        stroke-linecap="round"/>
+  <line x1="500" y1="500" x2="480" y2="490"
+        stroke="#9f7aea"
+        stroke-width="1.5"
+        opacity="0.4"
+        stroke-linecap="round"/>
+</svg>
