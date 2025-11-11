@@ -1,66 +1,38 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { HeroSection } from "@/components/HeroSection";
 import { AboutSection } from "@/components/AboutSection";
-import { ProjectsSection } from "@/components/ProjectsSection";
-import { ResearchSection } from "@/components/ResearchSection";
-import { PersonalSection } from "@/components/PersonalSection";
+import { ExperienceSection } from "@/components/ExperienceSection";
+import { WorkSection } from "@/components/WorkSection";
+import { LifeSection } from "@/components/LifeSection";
 import { ContactSection } from "@/components/ContactSection";
 import { Footer } from "@/components/Footer";
-import { GlobeJourney } from "@/components/GlobeJourney";
-import { FailuresSection } from "@/components/FailuresSection";
-import { CurrentlySection } from "@/components/CurrentlySection";
-import { CookWithMeSection } from "@/components/CookWithMeSection";
 import { SecretRecipesModal } from "@/components/SecretRecipesModal";
 import { useKonamiCode } from "@/hooks/useKonamiCode";
 import { initConsoleMessages } from "@/utils/consoleMessages";
 
 const Index = () => {
-  const [showGlobe, setShowGlobe] = useState(false);
-  const [showMainContent, setShowMainContent] = useState(false);
   const { success: konamiActivated, reset: resetKonami } = useKonamiCode();
 
   useEffect(() => {
     // Initialize console messages for curious developers
     initConsoleMessages();
-
-    // Check if user has already seen the intro
-    const hasSeenIntro = sessionStorage.getItem("hasSeenGlobeIntro");
-
-    if (!hasSeenIntro) {
-      setShowGlobe(true);
-      sessionStorage.setItem("hasSeenGlobeIntro", "true");
-    } else {
-      setShowMainContent(true);
-    }
   }, []);
-
-  const handleGlobeComplete = () => {
-    setShowGlobe(false);
-    setShowMainContent(true);
-  };
 
   return (
     <>
-      {showGlobe && <GlobeJourney onComplete={handleGlobeComplete} />}
-
-      <div className={`min-h-screen transition-opacity duration-1000 ${
-        showMainContent ? "opacity-100" : "opacity-0"
-      }`}>
+      <div className="min-h-screen">
         <Navigation />
         <HeroSection />
         <AboutSection />
-        <ProjectsSection />
-        <ResearchSection />
-        <FailuresSection />
-        <CurrentlySection />
-        <CookWithMeSection />
-        <PersonalSection />
+        <ExperienceSection />
+        <WorkSection />
+        {/* <LifeSection /> */}
         <ContactSection />
         <Footer />
       </div>
 
-      {/* Konami Code Easter Egg */}
+      {/* Konami Code Easter Egg - Hidden recipes and features */}
       <SecretRecipesModal isOpen={konamiActivated} onClose={resetKonami} />
     </>
   );

@@ -25,9 +25,9 @@ export const Navigation = () => {
 
   const navLinks = [
     { label: "About", id: "about" },
+    { label: "Experience", id: "experience" },
     { label: "Projects", id: "projects" },
-    { label: "Research", id: "research" },
-    { label: "Personal", id: "personal" },
+    // { label: "Life", id: "life" },
     { label: "Contact", id: "contact" },
   ];
 
@@ -43,9 +43,13 @@ export const Navigation = () => {
         <div className="flex items-center justify-between">
           <button
             onClick={() => scrollToSection("hero")}
-            className="text-xl font-bold bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+            className="text-xl font-bold text-foreground hover:opacity-70 transition-opacity"
           >
-            Portfolio
+            <img
+              src="/logo-nav.svg"
+              alt="Thu Nguyen"
+              className="h-10 w-10"
+            />
           </button>
 
           {/* Desktop Navigation */}

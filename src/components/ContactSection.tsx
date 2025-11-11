@@ -1,85 +1,98 @@
-import { Mail, Linkedin, Github, Send } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Mail, Linkedin, Github } from "lucide-react";
+import { ScrollReveal } from "./animations/ScrollReveal";
 
 const contactLinks = [
   {
     icon: Mail,
     label: "Email",
-    value: "your.email@stonybrook.edu",
-    href: "mailto:your.email@stonybrook.edu",
-    color: "hover:text-accent",
+    value: "thunma2010@gmail.com",
+    href: "mailto:thunma2010@gmail.com",
   },
   {
     icon: Linkedin,
     label: "LinkedIn",
-    value: "Connect with me",
-    href: "https://linkedin.com/in/yourprofile",
-    color: "hover:text-secondary",
+    value: "/in/thu-tech",
+    href: "https://www.linkedin.com/in/thu-tech/",
   },
   {
     icon: Github,
     label: "GitHub",
-    value: "Check out my code",
-    href: "https://github.com/yourusername",
-    color: "hover:text-accent",
+    value: "@nmat2010",
+    href: "https://github.com/nmat2010",
   },
 ];
 
 export const ContactSection = () => {
   return (
-    <section id="contact" className="py-24 bg-background">
+    <section
+      id="contact"
+      className="relative py-32 bg-muted/20 overflow-hidden"
+    >
+      {/* Subtle Vietnamese wave pattern */}
+      <div className="absolute bottom-10 left-10 w-40 h-16 opacity-[0.03]">
+        <svg viewBox="0 0 200 50" className="w-full h-full text-accent">
+          <path
+            d="M0,25 Q25,10 50,25 T100,25 T150,25 T200,25"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+          <path
+            d="M0,35 Q25,20 50,35 T100,35 T150,35 T200,35"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+        </svg>
+      </div>
+
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16 animate-fade-in">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Let's Connect
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              Always open to discussing research opportunities, collaborations, or
-              just chatting about AI and robotics
+          <ScrollReveal direction="up">
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                Get in Touch
+              </h2>
+              {/* Vietnamese star accent */}
+              <div className="flex gap-1 mt-2">
+                <div className="w-1 h-1 rounded-full bg-accent/50"></div>
+                <div className="w-1 h-1 rounded-full bg-yellow-500/50"></div>
+              </div>
+            </div>
+            <p className="text-muted-foreground mb-12 text-lg">
+              Open to research opportunities, collaborations, and conversations
+              about AI
             </p>
-          </div>
+          </ScrollReveal>
 
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
+          <div className="space-y-4">
             {contactLinks.map((link, index) => (
-              <a
-                key={index}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group p-6 rounded-2xl border-2 border-border hover:border-accent/50 transition-all duration-300 bg-card/50 backdrop-blur-sm hover:shadow-[0_0_30px_hsl(var(--accent)/0.15)] hover:-translate-y-1 animate-scale-in"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="flex flex-col items-center text-center gap-4">
-                  <div className="p-4 bg-gradient-to-br from-accent/10 to-secondary/10 rounded-full group-hover:scale-110 transition-transform">
-                    <link.icon className={`h-8 w-8 ${link.color} transition-colors`} />
+              <ScrollReveal key={index} direction="up" delay={index * 0.1}>
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative flex items-center gap-4 p-6 rounded-lg border border-border hover:border-accent/30 transition-all duration-200 bg-background"
+                >
+                  {/* Vietnamese corner accent */}
+                  <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-accent/20 group-hover:border-accent/50 transition-colors"></div>
+                  <div className="p-2 rounded-md bg-muted">
+                    <link.icon className="h-5 w-5 text-foreground" />
                   </div>
-                  <div>
-                    <h3 className="font-bold text-lg mb-1">{link.label}</h3>
-                    <p className="text-sm text-muted-foreground">{link.value}</p>
+                  <div className="flex-1">
+                    <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground mb-1">
+                      {link.label}
+                    </p>
+                    <p className="text-sm text-foreground font-medium">
+                      {link.value}
+                    </p>
                   </div>
-                </div>
-              </a>
+                  <span className="text-muted-foreground group-hover:text-foreground transition-colors">
+                    →
+                  </span>
+                </a>
+              </ScrollReveal>
             ))}
-          </div>
-
-          <div className="text-center p-8 rounded-2xl bg-gradient-to-r from-accent/5 to-secondary/5 border border-accent/20 animate-fade-in-up">
-            <h3 className="text-2xl font-bold mb-4">Ready to collaborate?</h3>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Whether you're interested in research collaboration, have a project
-              idea, or just want to discuss the latest in AI and robotics, I'd love
-              to hear from you.
-            </p>
-            <Button
-              size="lg"
-              className="bg-accent hover:bg-accent/90 text-white shadow-lg hover:shadow-[0_0_30px_hsl(var(--accent)/0.3)] transition-all group"
-              asChild
-            >
-              <a href="mailto:your.email@stonybrook.edu">
-                <Send className="mr-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                Send me an email
-              </a>
-            </Button>
           </div>
         </div>
       </div>
