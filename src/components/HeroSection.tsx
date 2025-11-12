@@ -70,7 +70,10 @@ export const HeroSection = () => {
         transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
       >
         <svg viewBox="0 0 100 100" className="w-full h-full text-accent">
-          <path d="M50,10 Q60,30 50,50 Q40,30 50,10 M50,50 Q70,60 50,90 Q30,60 50,50 M50,50 Q90,40 70,60 M50,50 Q10,40 30,60" fill="currentColor"/>
+          <path
+            d="M50,10 Q60,30 50,50 Q40,30 50,10 M50,50 Q70,60 50,90 Q30,60 50,50 M50,50 Q90,40 70,60 M50,50 Q10,40 30,60"
+            fill="currentColor"
+          />
         </svg>
       </motion.div>
       <motion.div
@@ -79,7 +82,10 @@ export const HeroSection = () => {
         transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
       >
         <svg viewBox="0 0 100 100" className="w-full h-full text-secondary">
-          <path d="M50,10 Q60,30 50,50 Q40,30 50,10 M50,50 Q70,60 50,90 Q30,60 50,50 M50,50 Q90,40 70,60 M50,50 Q10,40 30,60" fill="currentColor"/>
+          <path
+            d="M50,10 Q60,30 50,50 Q40,30 50,10 M50,50 Q70,60 50,90 Q30,60 50,50 M50,50 Q90,40 70,60 M50,50 Q10,40 30,60"
+            fill="currentColor"
+          />
         </svg>
       </motion.div>
 
@@ -97,7 +103,7 @@ export const HeroSection = () => {
               type: "spring",
               stiffness: 100,
               damping: 15,
-              delay: 0.2,
+              delay: 0.5,
             }}
           >
             <div className="relative">
@@ -167,7 +173,7 @@ export const HeroSection = () => {
             className="flex items-center justify-center gap-2"
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
           >
             <div className="w-8 h-px bg-gradient-to-r from-transparent via-accent/50 to-accent/50"></div>
             <motion.div
@@ -183,7 +189,7 @@ export const HeroSection = () => {
             className="text-6xl md:text-8xl font-bold tracking-tight"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
           >
             <motion.span
               className="bg-gradient-to-br from-foreground via-foreground to-foreground/60 bg-clip-text text-transparent inline-block"
@@ -199,7 +205,7 @@ export const HeroSection = () => {
             className="space-y-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
           >
             <p className="text-xl md:text-2xl text-muted-foreground font-light">
               Computer Engineering @ Stony Brook
@@ -230,9 +236,9 @@ export const HeroSection = () => {
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed font-light"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
+            transition={{ duration: 0.8, delay: 1.0 }}
           >
-            Building AI systems that preserve human stories and amplify human potential
+            Aspiring Research Engineer
           </motion.p>
 
           {/* Clean CTA buttons with subtle Vietnamese accent */}
@@ -240,15 +246,17 @@ export const HeroSection = () => {
             className="flex flex-wrap gap-4 justify-center pt-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.9 }}
+            transition={{ duration: 0.8, delay: 1.2 }}
           >
             <motion.a
-              href="#projects"
+              href="/resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
               className="group px-8 py-3 bg-foreground text-background rounded-md font-medium relative overflow-hidden"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span className="relative z-10">View Projects</span>
+              <span className="relative z-10">View Resume</span>
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-accent/20 via-accent/40 to-accent/20"
                 initial={{ x: "-100%" }}
@@ -259,7 +267,10 @@ export const HeroSection = () => {
             <motion.a
               href="#contact"
               className="px-8 py-3 border border-border text-foreground rounded-md font-medium"
-              whileHover={{ scale: 1.05, borderColor: "hsl(var(--accent) / 0.5)" }}
+              whileHover={{
+                scale: 1.05,
+                borderColor: "hsl(var(--accent) / 0.5)",
+              }}
               whileTap={{ scale: 0.95 }}
             >
               Get in Touch

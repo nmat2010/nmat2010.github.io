@@ -26,8 +26,8 @@ export const Navigation = () => {
   const navLinks = [
     { label: "About", id: "about" },
     { label: "Experience", id: "experience" },
+    // { label: "Skills", id: "skills" },
     { label: "Projects", id: "projects" },
-    // { label: "Life", id: "life" },
     { label: "Contact", id: "contact" },
   ];
 
@@ -48,7 +48,7 @@ export const Navigation = () => {
             <img
               src="/logo-nav.svg"
               alt="Thu Nguyen"
-              className="h-10 w-10"
+              className="h-12 w-12 md:h-14 md:w-14"
             />
           </button>
 

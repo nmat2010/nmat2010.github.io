@@ -61,39 +61,35 @@ export const ContactSection = () => {
             </div>
             <p className="text-muted-foreground mb-12 text-lg">
               Open to research opportunities, collaborations, and conversations
-              about AI
             </p>
           </ScrollReveal>
 
-          <div className="space-y-4">
-            {contactLinks.map((link, index) => (
-              <ScrollReveal key={index} direction="up" delay={index * 0.1}>
+          <ScrollReveal direction="up" delay={0.2}>
+            <div className="flex flex-wrap gap-4 justify-center">
+              {contactLinks.map((link, index) => (
                 <a
+                  key={index}
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative flex items-center gap-4 p-6 rounded-lg border border-border hover:border-accent/30 transition-all duration-200 bg-background"
+                  className="group relative flex flex-col items-center gap-2 px-8 py-4 rounded-lg border border-border hover:border-accent/40 transition-all duration-200 bg-background hover:shadow-lg"
                 >
-                  {/* Vietnamese corner accent */}
-                  <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-accent/20 group-hover:border-accent/50 transition-colors"></div>
-                  <div className="p-2 rounded-md bg-muted">
-                    <link.icon className="h-5 w-5 text-foreground" />
+                  {/* Vietnamese corner accents */}
+                  <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-accent/20 group-hover:border-accent/60 transition-colors"></div>
+                  <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-accent/20 group-hover:border-accent/60 transition-colors"></div>
+
+                  <div className="p-2 rounded-md bg-muted group-hover:bg-accent group-hover:text-white transition-colors">
+                    <link.icon className="h-5 w-5" />
                   </div>
-                  <div className="flex-1">
-                    <p className="text-xs uppercase tracking-wider font-medium text-muted-foreground mb-1">
+                  <div className="text-center">
+                    <p className="text-xs font-semibold text-foreground group-hover:text-accent transition-colors">
                       {link.label}
                     </p>
-                    <p className="text-sm text-foreground font-medium">
-                      {link.value}
-                    </p>
                   </div>
-                  <span className="text-muted-foreground group-hover:text-foreground transition-colors">
-                    →
-                  </span>
                 </a>
-              </ScrollReveal>
-            ))}
-          </div>
+              ))}
+            </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>
