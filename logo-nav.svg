@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a2a6c;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2d4a9e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4a6fb8;stop-opacity:1" />
+    </linearGradient>
+
+    <linearGradient id="lavenderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#b794f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9f7aea;stop-opacity:1" />
+    </linearGradient>
+
+    <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#e0d4ff;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#b794f6;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#1a2a6c;stop-opacity:0" />
+    </radialGradient>
+
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background circle with subtle glow -->
+  <circle cx="200" cy="200" r="190" fill="url(#glowGrad)" opacity="0.3"/>
+
+  <!-- Main geometric frame - hexagonal tech shape -->
+  <path d="M 200 50 L 275 100 L 275 200 L 200 250 L 125 200 L 125 100 Z"
+        fill="none"
+        stroke="url(#primaryGrad)"
+        stroke-width="3"
+        opacity="0.6"/>
+
+  <!-- Inner hexagon -->
+  <path d="M 200 75 L 255 112.5 L 255 187.5 L 200 225 L 145 187.5 L 145 112.5 Z"
+        fill="none"
+        stroke="#b794f6"
+        stroke-width="2"
+        opacity="0.5"/>
+
+  <!-- Neural network nodes -->
+  <circle cx="200" cy="150" r="8" fill="#c0c0c0" filter="url(#softGlow)"/>
+  <circle cx="170" cy="130" r="6" fill="#b794f6" opacity="0.8"/>
+  <circle cx="230" cy="130" r="6" fill="#b794f6" opacity="0.8"/>
+  <circle cx="160" cy="170" r="5" fill="#4a6fb8" opacity="0.7"/>
+  <circle cx="240" cy="170" r="5" fill="#4a6fb8" opacity="0.7"/>
+  <circle cx="185" cy="190" r="5" fill="#9f7aea" opacity="0.7"/>
+  <circle cx="215" cy="190" r="5" fill="#9f7aea" opacity="0.7"/>
+
+  <!-- Neural network connections -->
+  <line x1="200" y1="150" x2="170" y2="130" stroke="#b794f6" stroke-width="1.5" opacity="0.4"/>
+  <line x1="200" y1="150" x2="230" y2="130" stroke="#b794f6" stroke-width="1.5" opacity="0.4"/>
+  <line x1="170" y1="130" x2="160" y2="170" stroke="#4a6fb8" stroke-width="1" opacity="0.3"/>
+  <line x1="230" y1="130" x2="240" y2="170" stroke="#4a6fb8" stroke-width="1" opacity="0.3"/>
+  <line x1="200" y1="150" x2="185" y2="190" stroke="#9f7aea" stroke-width="1" opacity="0.3"/>
+  <line x1="200" y1="150" x2="215" y2="190" stroke="#9f7aea" stroke-width="1" opacity="0.3"/>
+
+  <!-- Central monogram - stylized TN -->
+  <g filter="url(#glow)">
+    <!-- T shape -->
+    <path d="M 170 110 L 230 110 L 230 117.5 L 205 117.5 L 205 160 L 195 160 L 195 117.5 L 170 117.5 Z"
+          fill="url(#primaryGrad)"/>
+
+    <!-- N shape -->
+    <path d="M 172.5 175 L 182.5 175 L 182.5 207.5 L 210 180 L 210 175 L 220 175 L 220 215 L 210 215 L 210 185 L 182.5 212.5 L 182.5 215 L 172.5 215 Z"
+          fill="url(#lavenderGrad)"/>
+  </g>
+
+  <!-- Decorative circuit corners -->
+  <circle cx="125" cy="100" r="4" fill="#b794f6" opacity="0.6"/>
+  <circle cx="275" cy="100" r="4" fill="#b794f6" opacity="0.6"/>
+  <circle cx="125" cy="200" r="4" fill="#4a6fb8" opacity="0.6"/>
+  <circle cx="275" cy="200" r="4" fill="#4a6fb8" opacity="0.6"/>
+
+  <!-- Energy pulse dots -->
+  <g opacity="0.6">
+    <circle cx="200" cy="55" r="3" fill="#e0d4ff">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="210" cy="57.5" r="2" fill="#b794f6">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="190" cy="57.5" r="2" fill="#b794f6">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>
