@@ -11,6 +11,9 @@ import { ContactSection } from "@/components/ContactSection";
 import { Footer } from "@/components/Footer";
 import { SecretRecipesModal } from "@/components/SecretRecipesModal";
 import { LoadingScreen } from "@/components/LoadingScreen";
+import { ScrollProgress } from "@/components/ScrollProgress";
+import { JourneyMap } from "@/components/JourneyMap";
+import { AchievementBadges } from "@/components/AchievementBadges";
 import { useKonamiCode } from "@/hooks/useKonamiCode";
 import { initConsoleMessages } from "@/utils/consoleMessages";
 
@@ -34,12 +37,14 @@ const Index = () => {
         animate={{ opacity: loadingComplete ? 1 : 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
+        <ScrollProgress />
         <Navigation />
         <HeroSection />
         <AboutSection />
+        <JourneyMap />
         {/* <StatsSection /> */}
         <ExperienceSection />
-        {/* <SkillsSection /> */}
+        {/* <AchievementBadges /> */}
         <WorkSection />
         <ContactSection />
         <Footer />

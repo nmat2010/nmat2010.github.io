@@ -7,9 +7,11 @@ import {
   Bot,
   Cpu,
   GraduationCap,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { ScrollReveal } from "./animations/ScrollReveal";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { ProjectModal } from "./ProjectModal";
 
@@ -61,25 +63,25 @@ const researchAreas = [
     title: "Machine Learning",
     description:
       "Exploring neural networks, deep learning, and how machines can learn from data to make intelligent decisions.",
+    details: [
+      "Alignment and Mechanistic Interpretability",
+      "Lifelong learning",
+      "Reinforcement learning",
+    ],
+    color: "hsl(var(--accent))",
   },
   {
     icon: Bot,
     title: "Robotics",
     description:
       "Investigating human-robot interaction, autonomous systems, and how robots can assist in everyday life.",
+    details: [
+      "Swarm intelligence",
+      "Vision language action models",
+      "Autonomous system",
+    ],
+    color: "hsl(189 60% 45%)",
   },
-  // {
-  //   icon: Cpu,
-  //   title: "Computer Vision",
-  //   description:
-  //     "Working on image recognition, object detection, and enabling machines to understand visual information.",
-  // },
-  // {
-  //   icon: GraduationCap,
-  //   title: "PhD Aspirations",
-  //   description:
-  //     "Planning to pursue doctoral research in AI/Robotics, focusing on applications that create meaningful social impact.",
-  // },
 ];
 
 export const WorkSection = () => {
@@ -88,6 +90,8 @@ export const WorkSection = () => {
   const [selectedProject, setSelectedProject] = useState<
     (typeof projects)[0] | null
   >(null);
+  const [expandedResearch, setExpandedResearch] = useState<number | null>(null);
+  const [hoveredResearch, setHoveredResearch] = useState<number | null>(null);
 
   // Calculate max index based on number of projects
   // On desktop (lg): show 3 cards, so no scrolling needed
@@ -342,57 +346,273 @@ export const WorkSection = () => {
                 <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                   Research Interests
                 </h2>
-                {/* Subtle Vietnamese accent */}
-                <div className="flex gap-1 mt-2">
+                {/* Animated Vietnamese accent */}
+                <motion.div
+                  className="flex gap-1 mt-2"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
                   <div className="w-1 h-1 rounded-full bg-accent/50"></div>
                   <div className="w-1 h-1 rounded-full bg-yellow-500/50"></div>
-                </div>
+                </motion.div>
               </div>
               <p className="text-muted-foreground mb-12 text-lg">
                 Exploring the intersection of AI, robotics, and human impact
               </p>
             </ScrollReveal>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              {researchAreas.map((area, index) => (
-                <ScrollReveal key={index} direction="up" delay={index * 0.1}>
-                  <div className="relative p-6 rounded-lg border border-border hover:border-accent/30 transition-all duration-200 bg-background group">
-                    {/* Subtle Vietnamese corner accent */}
-                    <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-accent/20 group-hover:border-accent/50 transition-colors"></div>
-                    <div className="flex items-start gap-4">
-                      <div className="p-2 rounded-md bg-muted shrink-0">
-                        <area.icon className="h-5 w-5 text-foreground" />
-                      </div>
+            {/* Interactive connection lines between research areas */}
+            <div className="relative">
+              <svg
+                className="absolute inset-0 w-full h-full pointer-events-none opacity-10"
+                style={{ zIndex: 0 }}
+              >
+                <motion.line
+                  x1="25%"
+                  y1="30%"
+                  x2="75%"
+                  y2="30%"
+                  stroke="hsl(var(--accent))"
+                  strokeWidth="2"
+                  strokeDasharray="5,5"
+                  initial={{ pathLength: 0 }}
+                  whileInView={{ pathLength: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 2, delay: 0.5 }}
+                />
+                <motion.line
+                  x1="25%"
+                  y1="70%"
+                  x2="75%"
+                  y2="70%"
+                  stroke="hsl(var(--accent))"
+                  strokeWidth="2"
+                  strokeDasharray="5,5"
+                  initial={{ pathLength: 0 }}
+                  whileInView={{ pathLength: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 2, delay: 0.7 }}
+                />
+              </svg>
 
-                      <div>
-                        <h3 className="text-lg font-bold mb-2 text-foreground">
-                          {area.title}
-                        </h3>
+              <div className="grid md:grid-cols-2 gap-6 relative z-10">
+                {researchAreas.map((area, index) => {
+                  const Icon = area.icon;
+                  const isExpanded = expandedResearch === index;
+                  const isHovered = hoveredResearch === index;
 
-                        <p className="text-muted-foreground text-sm leading-relaxed">
-                          {area.description}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
+                  return (
+                    <ScrollReveal
+                      key={index}
+                      direction="up"
+                      delay={index * 0.1}
+                    >
+                      <motion.div
+                        className="relative p-6 rounded-xl border border-border bg-background cursor-pointer overflow-hidden"
+                        whileHover={{ scale: 1.03, y: -5 }}
+                        animate={{
+                          borderColor: isHovered
+                            ? area.color
+                            : "hsl(var(--border))",
+                        }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                        onClick={() =>
+                          setExpandedResearch(isExpanded ? null : index)
+                        }
+                        onHoverStart={() => setHoveredResearch(index)}
+                        onHoverEnd={() => setHoveredResearch(null)}
+                      >
+                        {/* Glow effect */}
+                        <motion.div
+                          className="absolute inset-0 pointer-events-none"
+                          style={{
+                            background: `radial-gradient(circle at 50% 0%, ${area.color}15, transparent 70%)`,
+                          }}
+                          animate={{
+                            opacity: isHovered ? 1 : 0,
+                          }}
+                          transition={{ duration: 0.3 }}
+                        />
+
+                        <div className="relative z-10">
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-start gap-4 flex-1">
+                              {/* Animated icon */}
+                              <motion.div
+                                className="p-3 rounded-lg shrink-0"
+                                style={{
+                                  backgroundColor: `${area.color}20`,
+                                }}
+                                animate={{
+                                  scale: isHovered ? [1, 1.1, 1] : 1,
+                                  rotate: isHovered ? [0, 5, -5, 0] : 0,
+                                }}
+                                transition={{ duration: 0.5 }}
+                              >
+                                <Icon
+                                  className="h-6 w-6"
+                                  style={{ color: area.color }}
+                                />
+                              </motion.div>
+
+                              <div className="flex-1">
+                                <h3 className="text-lg font-bold mb-2 text-foreground">
+                                  {area.title}
+                                </h3>
+                                <p className="text-muted-foreground text-sm leading-relaxed">
+                                  {area.description}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Expand/Collapse button */}
+                            <motion.div
+                              animate={{ rotate: isExpanded ? 180 : 0 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              {isExpanded ? (
+                                <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                              ) : (
+                                <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                              )}
+                            </motion.div>
+                          </div>
+
+                          {/* Expandable details */}
+                          <AnimatePresence>
+                            {isExpanded && (
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="overflow-hidden"
+                              >
+                                <div className="pt-4 border-t border-border space-y-2">
+                                  <p className="text-xs font-semibold text-muted-foreground mb-3">
+                                    Key Focus Areas:
+                                  </p>
+                                  {area.details.map((detail, i) => (
+                                    <motion.div
+                                      key={i}
+                                      className="flex items-center gap-2"
+                                      initial={{ opacity: 0, x: -10 }}
+                                      animate={{ opacity: 1, x: 0 }}
+                                      transition={{ delay: i * 0.1 }}
+                                    >
+                                      <motion.div
+                                        className="w-1.5 h-1.5 rounded-full"
+                                        style={{ backgroundColor: area.color }}
+                                        animate={{
+                                          scale: [1, 1.5, 1],
+                                        }}
+                                        transition={{
+                                          duration: 2,
+                                          repeat: Infinity,
+                                          delay: i * 0.2,
+                                        }}
+                                      />
+                                      <span className="text-sm text-foreground">
+                                        {detail}
+                                      </span>
+                                    </motion.div>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+
+                        {/* Corner accents */}
+                        <motion.div
+                          className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2"
+                          style={{ borderColor: area.color }}
+                          animate={{
+                            opacity: isHovered ? 1 : 0.2,
+                          }}
+                        />
+                        <motion.div
+                          className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2"
+                          style={{ borderColor: area.color }}
+                          animate={{
+                            opacity: isHovered ? 1 : 0.2,
+                          }}
+                        />
+                      </motion.div>
+                    </ScrollReveal>
+                  );
+                })}
+              </div>
             </div>
 
             <ScrollReveal direction="up" delay={0.4}>
-              <div className="mt-12 p-8 rounded-lg border border-border bg-background">
-                <h3 className="text-xl font-bold mb-3 text-foreground">
-                  The Path Ahead
-                </h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  I'm committed to pursuing a PhD in AI and Robotics after
-                  graduation, with a focus on developing technologies that
-                  address real-world challenges and create positive social
-                  impact. My research will bridge the gap between cutting-edge
-                  AI innovations and practical applications that improve
-                  people's lives.
-                </p>
-              </div>
+              <motion.div
+                className="mt-12 p-8 rounded-xl border border-border bg-gradient-to-br from-background via-muted/20 to-background relative overflow-hidden"
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                {/* Animated background elements */}
+                <motion.div
+                  className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full blur-3xl"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.3, 0.6, 0.3],
+                  }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                />
+
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <GraduationCap className="w-6 h-6 text-accent" />
+                    <h3 className="text-xl font-bold text-foreground">
+                      The Path Ahead
+                    </h3>
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed">
+                    I'm committed to pursuing a PhD in AI and Robotics after
+                    graduation, with a focus on developing technologies that
+                    address real-world challenges and create positive social
+                    impact. My research will bridge the gap between cutting-edge
+                    AI innovations and practical applications that improve
+                    people's lives.
+                  </p>
+
+                  {/* Progress timeline
+                  <div className="mt-6 flex items-center gap-4">
+                    {["Research", "Publish", "Apply", "PhD"].map((step, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <motion.div
+                          className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center"
+                          initial={{ scale: 0 }}
+                          whileInView={{ scale: 1 }}
+                          viewport={{ once: true }}
+                          transition={{
+                            delay: i * 0.2,
+                            type: "spring",
+                            stiffness: 200,
+                          }}
+                        >
+                          <span className="text-xs font-bold text-accent">
+                            {i + 1}
+                          </span>
+                        </motion.div>
+                        <span className="text-sm text-muted-foreground">
+                          {step}
+                        </span>
+                        {i < 3 && (
+                          <motion.div
+                            className="w-8 h-0.5 bg-accent/30"
+                            initial={{ scaleX: 0 }}
+                            whileInView={{ scaleX: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.2 + 0.1 }}
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div> */}
+                </div>
+              </motion.div>
             </ScrollReveal>
           </div>
         </div>
