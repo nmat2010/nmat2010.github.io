@@ -221,22 +221,38 @@ export const WorkSection = () => {
                       viewport={{ once: true }}
                     >
                       <motion.div
-                        className="group relative bg-background rounded-xl border border-border hover:border-accent/30 transition-all duration-300 overflow-hidden shadow-lg hover:shadow-xl h-full cursor-pointer"
-                        whileHover={{ y: -8 }}
+                        className="group relative bg-background rounded-2xl border-2 border-border hover:border-accent/50 transition-all duration-300 overflow-hidden shadow-xl hover:shadow-2xl h-full cursor-pointer"
+                        whileHover={{ y: -8, scale: 1.02 }}
                         onClick={() => setSelectedProject(project)}
                       >
+                        {/* Shimmer effect on hover */}
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-transparent via-accent/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none z-20"
+                          style={{ width: "200%" }}
+                        />
+
                         {/* Project Image */}
                         {project.image && (
-                          <div className="relative h-48 bg-muted/30 overflow-hidden">
+                          <div className="relative h-56 bg-gradient-to-br from-muted/50 to-muted/20 overflow-hidden">
+                            {/* Gradient overlay for better text contrast */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                            {/* Image */}
                             <img
                               src={project.image}
                               alt={project.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
                               onError={(e) => {
                                 e.currentTarget.parentElement!.style.display =
                                   "none";
                               }}
                             />
+
+                            {/* Decorative corner accent */}
+                            <div className="absolute top-2 right-2 w-8 h-8 border-t-2 border-r-2 border-accent/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                            {/* Subtle vignette effect */}
+                            <div className="absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.3)] pointer-events-none" />
                           </div>
                         )}
 
@@ -245,33 +261,33 @@ export const WorkSection = () => {
                           {/* Header */}
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex-1">
-                              <h3 className="text-xl font-bold text-foreground mb-1 group-hover:text-accent transition-colors">
+                              <h3 className="text-xl font-bold text-foreground mb-1 group-hover:text-accent transition-colors flex items-center gap-2">
                                 {project.title}
+                                <span className="text-xs px-2 py-0.5 bg-accent/10 text-accent rounded-md font-normal">
+                                  {project.subtitle}
+                                </span>
                               </h3>
-                              <p className="text-sm text-muted-foreground">
-                                {project.subtitle}
-                              </p>
                             </div>
                             <div className="flex gap-2">
                               <a
                                 href={project.github}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-muted-foreground hover:text-accent transition-colors"
+                                className="p-2 rounded-lg text-muted-foreground hover:text-accent hover:bg-accent/5 transition-all"
                                 onClick={(e) => e.stopPropagation()}
                                 title="View on GitHub"
                               >
-                                <Github className="h-5 w-5" />
+                                <Github className="h-4 w-4" />
                               </a>
                               <a
                                 href={project.devpost}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-muted-foreground hover:text-accent transition-colors"
+                                className="p-2 rounded-lg text-muted-foreground hover:text-accent hover:bg-accent/5 transition-all"
                                 onClick={(e) => e.stopPropagation()}
                                 title="View on Devpost"
                               >
-                                <ExternalLink className="h-5 w-5" />
+                                <ExternalLink className="h-4 w-4" />
                               </a>
                             </div>
                           </div>
@@ -286,7 +302,7 @@ export const WorkSection = () => {
                             {project.tech.map((tech, i) => (
                               <span
                                 key={i}
-                                className="text-xs px-2 py-1 bg-muted rounded-md text-foreground/80"
+                                className="text-xs px-3 py-1.5 bg-muted/80 border border-border/50 rounded-full text-foreground/90 font-medium hover:bg-accent/10 hover:border-accent/30 transition-colors"
                               >
                                 {tech}
                               </span>
@@ -304,15 +320,19 @@ export const WorkSection = () => {
                               />
                               <span>{project.language}</span>
                             </div>
-                            <button className="text-xs text-accent hover:text-accent/80 font-medium transition-colors">
-                              Watch Demo →
+                            <button className="text-xs px-3 py-1.5 bg-accent/10 text-accent hover:bg-accent/20 rounded-md font-medium transition-all group-hover:scale-105 flex items-center gap-1">
+                              Watch Demo
+                              <ExternalLink className="w-3 h-3" />
                             </button>
                           </div>
                         </div>
 
+                        {/* Glow effect on hover */}
+                        <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none ring-2 ring-accent/20 blur-sm" />
+
                         {/* Vietnamese corner accents */}
-                        <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-accent/20 group-hover:border-accent/60 transition-colors" />
-                        <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-accent/20 group-hover:border-accent/60 transition-colors" />
+                        <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-accent/30 group-hover:border-accent/70 transition-colors" />
+                        <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-accent/30 group-hover:border-accent/70 transition-colors" />
                       </motion.div>
                     </motion.div>
                   ))}

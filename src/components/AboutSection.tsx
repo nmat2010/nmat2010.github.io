@@ -34,28 +34,28 @@ export const AboutSection = () => {
 
   const highlights = [
     {
-      text: "international student from Vietnam",
+      text: "Saigon",
       icon: Globe,
       color: "hsl(var(--accent))",
-      description: "Bringing global perspective",
+      description: "Where it all started",
     },
     {
-      text: "AI-powered solutions",
+      text: "AI and robotics",
       icon: Sparkles,
       color: "hsl(189 60% 45%)",
-      description: "Machine learning expertise",
+      description: "My happy place",
     },
     {
       text: "9/11 Memorial & Museum",
       icon: Heart,
       color: "hsl(356 75% 58%)",
-      description: "Meaningful impact",
+      description: "Tech that matters",
     },
     {
       text: "PhD",
       icon: Rocket,
       color: "hsl(45 93% 47%)",
-      description: "Research ambition",
+      description: "The big goal",
     },
   ];
 
@@ -132,213 +132,139 @@ export const AboutSection = () => {
               </motion.div>
             </div>
           </ScrollReveal>
+          {/* Short intro */}
           <ScrollReveal direction="up" delay={0.1}>
-            {/* 3D Interactive Card */}
-            <motion.div
-              ref={containerRef}
-              className="relative p-8 rounded-2xl border border-border bg-background/80 backdrop-blur-sm"
-              style={{
-                rotateX: springRotateX,
-                rotateY: springRotateY,
-                transformStyle: "preserve-3d",
-              }}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            >
-              {/* Shine effect */}
-              <motion.div
-                className="absolute inset-0 rounded-2xl opacity-0 bg-gradient-to-br from-accent/10 via-transparent to-secondary/10 pointer-events-none"
-                whileHover={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              />
-
-              <div className="space-y-6 text-lg text-muted-foreground leading-relaxed relative z-10">
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.2 }}
-                >
-                  I'm an{" "}
-                  <motion.span
-                    className="relative inline-block cursor-pointer"
-                    onHoverStart={() => setActiveHighlight(0)}
-                    onHoverEnd={() => setActiveHighlight(null)}
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <span
-                      className={`font-semibold transition-colors ${
-                        activeHighlight === 0 ? "text-foreground" : ""
-                      }`}
-                    >
-                      international student from Vietnam
-                    </span>
-                    <motion.div
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-accent"
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: activeHighlight === 0 ? 1 : 0 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  </motion.span>{" "}
-                  pursuing Computer Engineering at Stony Brook University. My
-                  journey from Saigon to New York has shaped my perspective on
-                  how technology can bridge cultures and create meaningful
-                  change.
-                </motion.p>
-
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.3 }}
-                >
-                  With 2 hackathon wins under my belt, I've developed{" "}
-                  <motion.span
-                    className="relative inline-block cursor-pointer"
-                    onHoverStart={() => setActiveHighlight(1)}
-                    onHoverEnd={() => setActiveHighlight(null)}
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <span
-                      className={`font-semibold transition-colors ${
-                        activeHighlight === 1 ? "text-foreground" : ""
-                      }`}
-                    >
-                      AI-powered solutions
-                    </span>
-                    <motion.div
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-secondary"
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: activeHighlight === 1 ? 1 : 0 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  </motion.span>{" "}
-                  that address real-world challenges. Currently, I'm building an
-                  oral history website for the{" "}
-                  <motion.span
-                    className="relative inline-block cursor-pointer"
-                    onHoverStart={() => setActiveHighlight(2)}
-                    onHoverEnd={() => setActiveHighlight(null)}
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <span
-                      className={`font-semibold transition-colors ${
-                        activeHighlight === 2 ? "text-foreground" : ""
-                      }`}
-                    >
-                      9/11 Memorial & Museum
-                    </span>
-                    <motion.div
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-red-500/70"
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: activeHighlight === 2 ? 1 : 0 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  </motion.span>
-                  , preserving the powerful stories of first responders.
-                </motion.p>
-
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.4 }}
-                >
-                  My passion lies in AI and robotics research with a focus on
-                  social good. I'm working toward a{" "}
-                  <motion.span
-                    className="relative inline-block cursor-pointer"
-                    onHoverStart={() => setActiveHighlight(3)}
-                    onHoverEnd={() => setActiveHighlight(null)}
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <span
-                      className={`font-semibold transition-colors ${
-                        activeHighlight === 3 ? "text-foreground" : ""
-                      }`}
-                    >
-                      PhD
-                    </span>
-                    <motion.div
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-yellow-500/70"
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: activeHighlight === 3 ? 1 : 0 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  </motion.span>{" "}
-                  to push the boundaries of how intelligent systems can serve
-                  humanity.
-                </motion.p>
-              </div>
-
-              {/* Corner accents */}
-              <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-accent/30" />
-              <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-accent/30" />
-            </motion.div>
+            <p className="text-xl md:text-2xl text-foreground/90 font-light leading-relaxed mb-12 text-center max-w-3xl mx-auto">
+              From Saigon to NYC. Building AI & robotics that actually help
+              people.
+              <span className="text-accent font-normal">
+                {" "}
+                Currently preserving 9/11 stories through tech.
+              </span>
+            </p>
           </ScrollReveal>
 
-          <ScrollReveal direction="up" delay={0.3}>
-            <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-              {highlights.map((highlight, index) => {
-                const Icon = highlight.icon;
-                const isActive = activeHighlight === index;
-
-                return (
+          {/* Visual highlight cards */}
+          <ScrollReveal direction="up" delay={0.2}>
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              {/* Card 1 - Journey */}
+              <motion.div
+                className="relative p-6 rounded-xl border-2 border-border bg-gradient-to-br from-accent/5 to-transparent hover:border-accent/50 transition-all group cursor-pointer"
+                onHoverStart={() => setActiveHighlight(0)}
+                onHoverEnd={() => setActiveHighlight(null)}
+                whileHover={{ scale: 1.02, y: -5 }}
+              >
+                <div className="flex items-start gap-4">
                   <motion.div
-                    key={index}
-                    className="relative p-4 rounded-lg border border-border bg-muted/30 cursor-pointer"
-                    onHoverStart={() => setActiveHighlight(index)}
-                    onHoverEnd={() => setActiveHighlight(null)}
-                    whileHover={{ scale: 1.05, y: -5 }}
-                    animate={{
-                      borderColor: isActive
-                        ? highlight.color
-                        : "hsl(var(--border))",
-                    }}
-                    transition={{ type: "spring", stiffness: 300 }}
+                    className="p-3 rounded-lg bg-accent/10"
+                    animate={{ rotate: activeHighlight === 0 ? 360 : 0 }}
+                    transition={{ duration: 0.6 }}
                   >
-                    <motion.div
-                      className="flex items-center justify-center w-10 h-10 rounded-full mb-3 mx-auto"
-                      style={{
-                        backgroundColor: isActive
-                          ? `${highlight.color}20`
-                          : "hsl(var(--muted))",
-                      }}
-                      animate={{
-                        scale: isActive ? [1, 1.2, 1] : 1,
-                      }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <Icon
-                        className="w-5 h-5"
-                        style={{
-                          color: isActive
-                            ? highlight.color
-                            : "hsl(var(--muted-foreground))",
-                        }}
-                      />
-                    </motion.div>
-                    <p className="text-xs text-center text-muted-foreground">
-                      {highlight.description}
-                    </p>
-
-                    {/* Glow effect when active */}
-                    <motion.div
-                      className="absolute inset-0 rounded-lg pointer-events-none"
-                      style={{
-                        boxShadow: isActive
-                          ? `0 0 20px ${highlight.color}40`
-                          : "none",
-                      }}
-                      animate={{
-                        opacity: isActive ? 1 : 0,
-                      }}
-                    />
+                    <Globe className="w-6 h-6 text-accent" />
                   </motion.div>
-                );
-              })}
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                      🇻🇳 → 🇺🇸
+                    </h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      Computer Engineering @ Stony Brook. Learning that the best
+                      solutions come from different perspectives (and lots of
+                      coffee).
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Card 2 - Passion */}
+              <motion.div
+                className="relative p-6 rounded-xl border-2 border-border bg-gradient-to-br from-secondary/5 to-transparent hover:border-secondary/50 transition-all group cursor-pointer"
+                onHoverStart={() => setActiveHighlight(1)}
+                onHoverEnd={() => setActiveHighlight(null)}
+                whileHover={{ scale: 1.02, y: -5 }}
+              >
+                <div className="flex items-start gap-4">
+                  <motion.div
+                    className="p-3 rounded-lg bg-secondary/10"
+                    animate={{
+                      scale: activeHighlight === 1 ? [1, 1.2, 1] : 1,
+                    }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Sparkles className="w-6 h-6 text-secondary" />
+                  </motion.div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                      AI & Robotics 🤖
+                    </h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      Not the flashy stuff - tech that actually matters.
+                      Hackathons winner who codes for impact, not just for
+                      demos.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Card 3 - Current Work */}
+              <motion.div
+                className="relative p-6 rounded-xl border-2 border-border bg-gradient-to-br from-red-500/5 to-transparent hover:border-red-500/30 transition-all group cursor-pointer"
+                onHoverStart={() => setActiveHighlight(2)}
+                onHoverEnd={() => setActiveHighlight(null)}
+                whileHover={{ scale: 1.02, y: -5 }}
+              >
+                <div className="flex items-start gap-4">
+                  <motion.div
+                    className="p-3 rounded-lg bg-red-500/10"
+                    animate={{
+                      y: activeHighlight === 2 ? [-2, 2, -2] : 0,
+                    }}
+                    transition={{
+                      duration: 0.5,
+                      repeat: activeHighlight === 2 ? Infinity : 0,
+                    }}
+                  >
+                    <Heart className="w-6 h-6 text-red-500/70" />
+                  </motion.div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                      9/11 Memorial Project
+                    </h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      Building an oral history platform to preserve first
+                      responders' stories. Technology meets humanity.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Card 4 - Future */}
+              <motion.div
+                className="relative p-6 rounded-xl border-2 border-border bg-gradient-to-br from-yellow-500/5 to-transparent hover:border-yellow-500/30 transition-all group cursor-pointer"
+                onHoverStart={() => setActiveHighlight(3)}
+                onHoverEnd={() => setActiveHighlight(null)}
+                whileHover={{ scale: 1.02, y: -5 }}
+              >
+                <div className="flex items-start gap-4">
+                  <motion.div
+                    className="p-3 rounded-lg bg-yellow-500/10"
+                    animate={{
+                      y: activeHighlight === 3 ? [0, -10, 0] : 0,
+                    }}
+                    transition={{ duration: 0.8 }}
+                  >
+                    <Rocket className="w-6 h-6 text-yellow-500/70" />
+                  </motion.div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                      Eyeing a PhD 🎓
+                    </h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      Research is where the magic happens. Big goal: intelligent
+                      systems that work for everyone.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
             </div>
           </ScrollReveal>
           {/* <ScrollReveal direction="up" delay={0.4}>
