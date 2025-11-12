@@ -65,21 +65,22 @@ export const ProjectModal = ({ isOpen, onClose, project }: ProjectModalProps) =>
                 transition={{ type: "spring", duration: 0.5 }}
               >
                 {/* Vietnamese corner accents */}
-                <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-accent/30" />
-                <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-accent/30" />
+                <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-accent/30 pointer-events-none z-10" />
+                <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-accent/30 pointer-events-none z-10" />
 
-                {/* Close button */}
+                {/* Close button - Fixed at top right of modal */}
                 <motion.button
                   onClick={onClose}
-                  className="absolute top-4 right-4 z-10 p-2 rounded-full bg-muted/50 hover:bg-muted text-foreground hover:text-accent transition-colors"
+                  className="absolute top-4 right-4 z-[60] p-3 rounded-full bg-accent text-white shadow-xl hover:bg-accent/90 transition-colors"
                   whileHover={{ scale: 1.1, rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
+                  title="Close (Esc)"
                 >
-                  <X className="h-5 w-5" />
+                  <X className="h-6 w-6" />
                 </motion.button>
 
                 {/* Scrollable content */}
-                <div className="overflow-y-auto max-h-[85vh] custom-scrollbar">
+                <div className="overflow-y-auto max-h-[85vh] custom-scrollbar pt-16">
                   {/* YouTube Video Embed */}
                   {project.youtubeId && (
                     <div className="relative w-full aspect-video bg-muted/30">
