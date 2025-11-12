@@ -14,6 +14,10 @@ export const HeroSection = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
 
+  // Live coding animation stays visible much longer with slow, gradual fade
+  const codingOpacity = useTransform(scrollYProgress, [0, 0.6, 0.95], [1, 1, 0]);
+  const codingScale = useTransform(scrollYProgress, [0, 0.95], [1, 0.98]);
+
   const scrollToNext = () => {
     const aboutSection = document.getElementById("about");
     if (aboutSection) {
@@ -25,7 +29,7 @@ export const HeroSection = () => {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative min-h-screen flex items-start justify-center overflow-hidden bg-gradient-to-b from-background via-background to-muted/20 pt-32 pb-20"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-background via-background to-muted/20 py-20"
     >
       {/* Animated background gradient orbs */}
       <motion.div
@@ -94,10 +98,10 @@ export const HeroSection = () => {
         className="container mx-auto px-6 relative z-10"
         style={{ opacity, scale }}
       >
-        <div className="max-w-5xl mx-auto text-center space-y-10">
+        <div className="max-w-5xl mx-auto text-center space-y-6">
           {/* Profile picture with Vietnamese-inspired frame */}
           <motion.div
-            className="flex justify-center mb-8"
+            className="flex justify-center mb-4"
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{
@@ -110,7 +114,7 @@ export const HeroSection = () => {
             <div className="relative">
               {/* Subtle lotus-inspired decorative rings with pulse */}
               <motion.div
-                className="absolute -inset-6 rounded-full border border-accent/10"
+                className="absolute -inset-4 rounded-full border border-accent/10"
                 animate={{
                   scale: [1, 1.05, 1],
                   opacity: [0.3, 0.6, 0.3],
@@ -122,7 +126,7 @@ export const HeroSection = () => {
                 }}
               />
               <motion.div
-                className="absolute -inset-8 rounded-full border border-secondary/10"
+                className="absolute -inset-5 rounded-full border border-secondary/10"
                 animate={{
                   scale: [1, 1.08, 1],
                   opacity: [0.2, 0.5, 0.2],
@@ -142,7 +146,7 @@ export const HeroSection = () => {
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-accent/20 via-secondary/10 to-transparent blur-xl"></div>
-                <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-2 border-border shadow-lg">
+                <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-border shadow-lg">
                   <img
                     src={profileImg}
                     alt="Thu Nguyen"
@@ -187,7 +191,7 @@ export const HeroSection = () => {
 
           {/* Name with clean typography and animation */}
           <motion.h1
-            className="text-6xl md:text-8xl font-bold tracking-tight"
+            className="text-5xl md:text-6xl font-bold tracking-tight"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
@@ -203,15 +207,15 @@ export const HeroSection = () => {
 
           {/* Subtitle with Vietnamese touch */}
           <motion.div
-            className="space-y-2"
+            className="space-y-1"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
           >
-            <p className="text-xl md:text-2xl text-muted-foreground font-light">
+            <p className="text-lg md:text-xl text-muted-foreground font-light">
               Computer Engineering @ Stony Brook
             </p>
-            <div className="flex items-center justify-center gap-2 text-sm md:text-base text-muted-foreground/60">
+            <div className="flex items-center justify-center gap-2 text-xs md:text-sm text-muted-foreground/60">
               <motion.span
                 whileHover={{ scale: 1.1, color: "hsl(var(--accent))" }}
               >
@@ -234,7 +238,7 @@ export const HeroSection = () => {
 
           {/* Single powerful statement */}
           <motion.p
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed font-light"
+            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed font-light"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.0 }}
@@ -242,9 +246,17 @@ export const HeroSection = () => {
             Aspiring Research Engineer
           </motion.p>
 
+          {/* Live Coding Animation - positioned prominently */}
+          <motion.div
+            className="pt-4"
+            style={{ opacity: codingOpacity, scale: codingScale }}
+          >
+            <LiveCodingAnimation />
+          </motion.div>
+
           {/* Clean CTA buttons with subtle Vietnamese accent */}
           <motion.div
-            className="flex flex-wrap gap-4 justify-center pt-4"
+            className="flex flex-wrap gap-3 justify-center pt-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.2 }}
@@ -253,7 +265,7 @@ export const HeroSection = () => {
               href="/resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="group px-8 py-3 bg-foreground text-background rounded-md font-medium relative overflow-hidden"
+              className="group px-6 py-2.5 bg-foreground text-background rounded-md font-medium relative overflow-hidden text-sm"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -267,7 +279,7 @@ export const HeroSection = () => {
             </motion.a>
             <motion.a
               href="#contact"
-              className="px-8 py-3 border border-border text-foreground rounded-md font-medium"
+              className="px-6 py-2.5 border border-border text-foreground rounded-md font-medium text-sm"
               whileHover={{
                 scale: 1.05,
                 borderColor: "hsl(var(--accent) / 0.5)",
@@ -277,11 +289,6 @@ export const HeroSection = () => {
               Get in Touch
             </motion.a>
           </motion.div>
-
-          {/* Live Coding Animation */}
-          <div className="pt-8">
-            <LiveCodingAnimation />
-          </div>
         </div>
       </motion.div>
 
