@@ -25,7 +25,7 @@ export const HeroSection = () => {
     <section
       ref={sectionRef}
       id="hero"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-background via-background to-muted/20"
+      className="relative min-h-screen flex items-start justify-center overflow-hidden bg-gradient-to-b from-background via-background to-muted/20 pt-32 pb-20"
     >
       {/* Animated background gradient orbs */}
       <motion.div
@@ -94,7 +94,7 @@ export const HeroSection = () => {
         className="container mx-auto px-6 relative z-10"
         style={{ opacity, scale }}
       >
-        <div className="max-w-5xl mx-auto text-center space-y-10 py-20">
+        <div className="max-w-5xl mx-auto text-center space-y-10">
           {/* Profile picture with Vietnamese-inspired frame */}
           <motion.div
             className="flex justify-center mb-8"
@@ -279,7 +279,7 @@ export const HeroSection = () => {
           </motion.div>
 
           {/* Live Coding Animation */}
-          <div className="pt-16">
+          <div className="pt-8">
             <LiveCodingAnimation />
           </div>
         </div>
