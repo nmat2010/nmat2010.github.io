@@ -2,6 +2,7 @@ import { ChevronDown } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import profileImg from "@/assets/profile.jpeg";
 import { useRef } from "react";
+import { LiveCodingAnimation } from "./LiveCodingAnimation";
 
 export const HeroSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -276,6 +277,11 @@ export const HeroSection = () => {
               Get in Touch
             </motion.a>
           </motion.div>
+
+          {/* Live Coding Animation */}
+          <div className="pt-16">
+            <LiveCodingAnimation />
+          </div>
         </div>
       </motion.div>
 
