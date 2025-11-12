@@ -6,7 +6,10 @@ export const AboutSection = () => {
   const [hoveredStat, setHoveredStat] = useState<number | null>(null);
 
   return (
-    <section id="about" className="relative py-32 bg-background overflow-hidden">
+    <section
+      id="about"
+      className="relative py-32 bg-background overflow-hidden"
+    >
       {/* Animated gradient orb */}
       <motion.div
         className="absolute top-1/2 left-1/4 w-64 h-64 bg-gradient-to-br from-accent/10 to-secondary/10 rounded-full blur-3xl"
@@ -75,7 +78,7 @@ export const AboutSection = () => {
             </div>
           </ScrollReveal>
 
-          {/* Interactive animated stats */}
+          {/* Interactive animated stats
           <ScrollReveal direction="up" delay={0.2}>
             <div className="mt-12 pt-12 border-t border-border">
               <div className="grid grid-cols-3 gap-8 text-center">
@@ -150,7 +153,7 @@ export const AboutSection = () => {
                 </motion.div>
               </div>
             </div>
-          </ScrollReveal>
+          </ScrollReveal> */}
         </div>
       </div>
     </section>

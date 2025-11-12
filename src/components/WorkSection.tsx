@@ -2,6 +2,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Github,
+  ExternalLink,
   Brain,
   Bot,
   Cpu,
@@ -10,40 +11,47 @@ import {
 import { ScrollReveal } from "./animations/ScrollReveal";
 import { motion } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
+import { ProjectModal } from "./ProjectModal";
 
 const projects = [
   {
     title: "Percepta",
     subtitle: "HackPrinceton'25",
     description:
-      "Developed an innovative AI solution that won first place. Leveraged machine learning to solve real-world problems with measurable impact.",
-    language: "Python",
-    languageColor: "#3572A5",
-    tech: ["Python", "TensorFlow", "React", "Flask"],
+      "An iOS camera app that reveals everyday scenes through mathematician, physicist, biologist, or artist perspectives.",
+    language: "Swift",
+    languageColor: "#F05138",
+    tech: ["SwiftUI", "YOLO", "Python", "AVFoundation"],
     image: "/projects/percepta.png",
     github: "https://github.com/han-hangoc-le/percepta",
+    devpost: "https://devpost.com/software/percepta-4jfs8b",
+    youtubeId: "H3e_ZA9uGO8",
   },
   {
     title: "SeeSay",
     subtitle: "HopperHacks'25",
     description:
-      "AI-driven platform that secured top honors at competitive hackathon. Focused on accessibility and user-centric design.",
+      "A web app enabling hands-free navigation and control using advanced voice and eye-tracking for accessible, intuitive user interaction.",
     language: "JavaScript",
     languageColor: "#f1e05a",
-    tech: ["Next.js", "PostgreSQL", "Docker"],
+    tech: ["React", "WebGazer.js", "Web Speech API"],
     image: "/projects/seesay.jpg",
     github: "https://github.com/nmat2010/seesay-hopperhacks-25",
+    devpost: "https://devpost.com/software/seesay-1r8svc",
+    youtubeId: "SHkn2FNm0J0",
   },
   {
     title: "SkinGuard",
     subtitle: "HackNYU'25",
     description:
-      "AI-powered platform for skin health monitoring. Winner at HackNYU with innovative ML approach to medical diagnostics.",
+      "SkinGuard uses OpenAI and EfficientNet-B3 to detect skin diseases, provide diagnoses, and promote affordable, accessible skincare awareness.",
     language: "Python",
     languageColor: "#3572A5",
-    tech: ["PyTorch", "Next.js", "FastAPI"],
+    tech: ["React", "MERN", "Efficient-Net-B3", "OpenAI API"],
     image: "/projects/skinguard.jpg",
     github: "https://github.com/nmat2010/skinguard-hacknyu-25",
+    devpost: "https://devpost.com/software/skinguard-ai-dermatologist",
+    youtubeId: "8dmgMJcpn14",
   },
 ];
 
@@ -60,30 +68,33 @@ const researchAreas = [
     description:
       "Investigating human-robot interaction, autonomous systems, and how robots can assist in everyday life.",
   },
-  {
-    icon: Cpu,
-    title: "Computer Vision",
-    description:
-      "Working on image recognition, object detection, and enabling machines to understand visual information.",
-  },
-  {
-    icon: GraduationCap,
-    title: "PhD Aspirations",
-    description:
-      "Planning to pursue doctoral research in AI/Robotics, focusing on applications that create meaningful social impact.",
-  },
+  // {
+  //   icon: Cpu,
+  //   title: "Computer Vision",
+  //   description:
+  //     "Working on image recognition, object detection, and enabling machines to understand visual information.",
+  // },
+  // {
+  //   icon: GraduationCap,
+  //   title: "PhD Aspirations",
+  //   description:
+  //     "Planning to pursue doctoral research in AI/Robotics, focusing on applications that create meaningful social impact.",
+  // },
 ];
 
 export const WorkSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [selectedProject, setSelectedProject] = useState<
+    (typeof projects)[0] | null
+  >(null);
 
   // Calculate max index based on number of projects
   // On desktop (lg): show 3 cards, so no scrolling needed
   // On tablet (md): show 2 cards, max index = projects.length - 2
   // On mobile: show 1 card, max index = projects.length - 1
   const getMaxIndex = () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       if (window.innerWidth >= 1024) return 0; // lg breakpoint - show all 3
       if (window.innerWidth >= 768) return Math.max(0, projects.length - 2); // md breakpoint
       return Math.max(0, projects.length - 1); // mobile
@@ -103,10 +114,10 @@ export const WorkSection = () => {
 
   // Update maxIndex on window resize
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const handleResize = () => setMaxIndex(getMaxIndex());
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
     }
   }, []);
 
@@ -144,14 +155,19 @@ export const WorkSection = () => {
           {/* Projects Carousel Section */}
           <div className="mb-24">
             <ScrollReveal direction="up">
-              <div className="text-center mb-12">
-                <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-2">
+              <div className="flex items-center gap-3 mb-4">
+                <h2 className="text-3xl md:text-4xl font-bold text-foreground">
                   Projects
-                </p>
-                <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                  My GitHub Repositories
                 </h2>
+                {/* Vietnamese accent */}
+                <div className="flex gap-1 mt-2">
+                  <div className="w-1 h-1 rounded-full bg-accent/50"></div>
+                  <div className="w-1 h-1 rounded-full bg-yellow-500/50"></div>
+                </div>
               </div>
+              <p className="text-muted-foreground mb-12 text-lg">
+                Building meaningful solutions through code
+              </p>
             </ScrollReveal>
 
             {/* Carousel Container */}
@@ -187,7 +203,7 @@ export const WorkSection = () => {
                   ref={scrollContainerRef}
                   className="flex gap-6 px-4 lg:justify-center"
                   animate={{
-                    x: maxIndex === 0 ? 0 : `${-currentIndex * 100}%`
+                    x: maxIndex === 0 ? 0 : `${-currentIndex * 100}%`,
                   }}
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 >
@@ -201,8 +217,9 @@ export const WorkSection = () => {
                       viewport={{ once: true }}
                     >
                       <motion.div
-                        className="group relative bg-background rounded-xl border border-border hover:border-accent/30 transition-all duration-300 overflow-hidden shadow-lg hover:shadow-xl h-full"
+                        className="group relative bg-background rounded-xl border border-border hover:border-accent/30 transition-all duration-300 overflow-hidden shadow-lg hover:shadow-xl h-full cursor-pointer"
                         whileHover={{ y: -8 }}
+                        onClick={() => setSelectedProject(project)}
                       >
                         {/* Project Image */}
                         {project.image && (
@@ -231,14 +248,28 @@ export const WorkSection = () => {
                                 {project.subtitle}
                               </p>
                             </div>
-                            <a
-                              href={project.github}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-muted-foreground hover:text-accent transition-colors"
-                            >
-                              <Github className="h-5 w-5" />
-                            </a>
+                            <div className="flex gap-2">
+                              <a
+                                href={project.github}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-muted-foreground hover:text-accent transition-colors"
+                                onClick={(e) => e.stopPropagation()}
+                                title="View on GitHub"
+                              >
+                                <Github className="h-5 w-5" />
+                              </a>
+                              <a
+                                href={project.devpost}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-muted-foreground hover:text-accent transition-colors"
+                                onClick={(e) => e.stopPropagation()}
+                                title="View on Devpost"
+                              >
+                                <ExternalLink className="h-5 w-5" />
+                              </a>
+                            </div>
                           </div>
 
                           {/* Description */}
@@ -259,7 +290,7 @@ export const WorkSection = () => {
                           </div>
 
                           {/* Stats Bar */}
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
                             <div className="flex items-center gap-1.5">
                               <div
                                 className="w-3 h-3 rounded-full"
@@ -269,14 +300,9 @@ export const WorkSection = () => {
                               />
                               <span>{project.language}</span>
                             </div>
-                            {/* <div className="flex items-center gap-1">
-                              <Star className="h-4 w-4" />
-                              <span>{project.stars}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <GitCommit className="h-4 w-4" />
-                              <span>{project.commits}</span>
-                            </div> */}
+                            <button className="text-xs text-accent hover:text-accent/80 font-medium transition-colors">
+                              Watch Demo →
+                            </button>
                           </div>
                         </div>
 
@@ -371,6 +397,13 @@ export const WorkSection = () => {
           </div>
         </div>
       </div>
+
+      {/* Project Detail Modal */}
+      <ProjectModal
+        isOpen={selectedProject !== null}
+        onClose={() => setSelectedProject(null)}
+        project={selectedProject}
+      />
     </section>
   );
 };

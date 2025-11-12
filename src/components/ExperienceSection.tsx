@@ -1,6 +1,7 @@
-import { Briefcase, Calendar, MapPin } from "lucide-react";
+import { Briefcase, Calendar, MapPin, ChevronDown, ChevronUp } from "lucide-react";
 import { ScrollReveal } from "./animations/ScrollReveal";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 const experiences = [
   {
@@ -9,12 +10,8 @@ const experiences = [
     location: "Stony Brook, NY",
     period: "Nov 2025 - Present",
     description:
-      "Conducting research in LLM alignment mechanistic interpretability under Professor Paola Cascante-Bonilla.",
-    highlights: [
-      "Published research on transformer architectures",
-      "Developed novel NLP pipeline",
-      "Mentored 3 undergraduate students",
-    ],
+      "Conducting research in LLM alignment and mechanistic interpretability under Professor Paola Cascante-Bonilla.",
+    highlights: [],
     color: "from-accent to-accent/80",
     logo: "/logos/sbu.png",
   },
@@ -24,11 +21,12 @@ const experiences = [
     location: "Stony Brook, NY",
     period: "April 2025 - Present",
     description:
-      "Building an oral history digital archive platform to preserve first responder testimonies. Implementing video processing, search functionality, and accessible UI/UX design.",
+      "Led a 6-person team to ship a searchable interview archive for the 9/11 Memorial & Museum; delivered demos on time and aligned releases via Jira milestones.",
     highlights: [
-      "Built full-stack web application",
-      "Processed 100+ hours of video content",
-      "Improved site accessibility to WCAG AA standards",
+      "Designed & containerized the backend (Docker) with FastAPI + PostgreSQL; built keyword & semantic transcript search with sub-300 ms query latency across 800+ hours of audio/video",
+      "Built the ETL/data pipeline end-to-end: AWS S3 storage, metadata/transcript ingestion, and EC2 compression workflows that reduced file size 90% while preserving playback quality",
+      "Authored runbooks + contributor docs (setup, deploy, troubleshooting) that cut onboarding from 2 days to 2 hours for new contributors",
+      "Set up CI/CD (build/test/deploy) to automate releases and improve reliability across environments",
     ],
     color: "from-secondary to-secondary/80",
     logo: "/logos/wtc.png",
@@ -39,11 +37,12 @@ const experiences = [
     location: "Ho Chi Minh City, Vietnam",
     period: "June 2025 - August 2025",
     description:
-      "Assisted in Data Structures & Algorithms course. Held weekly office hours, graded assignments, and mentored students on complex algorithmic concepts.",
+      "Led a team of 5 interns through Jira sprint planning and code reviews, delivering 100% of sprint commitments and improving throughput by 20%.",
     highlights: [
-      "Supported 150+ students",
-      "Conducted weekly recitations",
-      "Created supplementary learning materials",
+      "Built production REST APIs using Spring Boot with JPA/Hibernate and PostgreSQL, applying layered architecture and validation for reliability",
+      "Integrated Kafka for asynchronous messaging, boosting scalability and reducing system bottlenecks",
+      "Implemented Keycloak-based role access control to standardize authentication across services",
+      "Established JUnit5/Mockito test suite with 90%+ coverage, cutting pre-merge defects",
     ],
     color: "from-accent to-secondary",
     logo: "/logos/fpt.jpg",
@@ -51,6 +50,20 @@ const experiences = [
 ];
 
 export const ExperienceSection = () => {
+  const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
+
+  const toggleExpand = (index: number) => {
+    setExpandedItems((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(index)) {
+        newSet.delete(index);
+      } else {
+        newSet.add(index);
+      }
+      return newSet;
+    });
+  };
+
   return (
     <section
       id="experience"
@@ -253,22 +266,51 @@ export const ExperienceSection = () => {
                           {exp.description}
                         </p>
 
-                        {/* Highlights */}
-                        <div className="space-y-2">
-                          {exp.highlights.map((highlight, i) => (
+                        {/* Toggle Button - Only show if there are highlights */}
+                        {exp.highlights.length > 0 && (
+                          <motion.button
+                            onClick={() => toggleExpand(index)}
+                            className="flex items-center gap-2 text-sm text-accent hover:text-accent/80 transition-colors mb-4 font-medium"
+                            whileHover={{ x: 3 }}
+                          >
+                            <span>
+                              {expandedItems.has(index) ? "Hide Details" : "View Details"}
+                            </span>
+                            {expandedItems.has(index) ? (
+                              <ChevronUp className="h-4 w-4" />
+                            ) : (
+                              <ChevronDown className="h-4 w-4" />
+                            )}
+                          </motion.button>
+                        )}
+
+                        {/* Highlights - Collapsible */}
+                        <AnimatePresence>
+                          {expandedItems.has(index) && exp.highlights.length > 0 && (
                             <motion.div
-                              key={i}
-                              className="flex items-start gap-2 text-sm text-muted-foreground"
-                              initial={{ opacity: 0, x: -10 }}
-                              whileInView={{ opacity: 1, x: 0 }}
-                              transition={{ delay: i * 0.1 }}
-                              viewport={{ once: true }}
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.3, ease: "easeInOut" }}
+                              className="overflow-hidden"
                             >
-                              <div className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 shrink-0"></div>
-                              <span>{highlight}</span>
+                              <div className="space-y-2 pt-2 border-t border-border/50">
+                                {exp.highlights.map((highlight, i) => (
+                                  <motion.div
+                                    key={i}
+                                    className="flex items-start gap-2 text-sm text-muted-foreground"
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: i * 0.05 }}
+                                  >
+                                    <div className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 shrink-0"></div>
+                                    <span>{highlight}</span>
+                                  </motion.div>
+                                ))}
+                              </div>
                             </motion.div>
-                          ))}
-                        </div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     </motion.div>
                   </motion.div>
