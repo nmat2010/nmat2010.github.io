@@ -42,7 +42,6 @@ export const Navigation = () => {
   const navLinks = [
     { label: "About", id: "about" },
     { label: "Experience", id: "experience" },
-    // { label: "Skills", id: "skills" },
     { label: "Projects", id: "projects" },
     { label: "Contact", id: "contact" },
   ];
@@ -58,16 +57,9 @@ export const Navigation = () => {
       >
         <div className="container mx-auto px-6 py-4 relative z-10">
           <div className="flex items-center justify-between">
-            <button
-              onClick={() => scrollToSection("hero")}
-              className="text-xl font-bold text-foreground hover:opacity-70 transition-opacity relative z-[1000] pointer-events-auto"
-            >
-              <img
-                src="/logo-nav.svg"
-                alt="Thu Nguyen"
-                className="h-12 w-12 md:h-14 md:w-14"
-              />
-            </button>
+            <div className="text-xl font-bold text-foreground relative z-[1000]">
+              Thu Nguyen
+            </div>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8 relative z-[1000]">
