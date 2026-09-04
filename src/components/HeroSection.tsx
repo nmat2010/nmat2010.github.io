@@ -2,7 +2,6 @@ import { ChevronDown } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import profileImg from "@/assets/profile.jpeg";
 import { useRef } from "react";
-import { LiveCodingAnimation } from "./LiveCodingAnimation";
 
 export const HeroSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -13,10 +12,6 @@ export const HeroSection = () => {
 
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
-
-  // Live coding animation stays visible much longer with slow, gradual fade
-  const codingOpacity = useTransform(scrollYProgress, [0, 0.6, 0.95], [1, 1, 0]);
-  const codingScale = useTransform(scrollYProgress, [0, 0.95], [1, 0.98]);
 
   const scrollToNext = () => {
     const aboutSection = document.getElementById("about");
@@ -213,45 +208,8 @@ export const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.8 }}
           >
             <p className="text-lg md:text-xl text-muted-foreground font-light">
-              Computer Engineering @ Stony Brook
+              Computer Engineering @ Stony Brook University
             </p>
-            <div className="flex items-center justify-center gap-2 text-xs md:text-sm text-muted-foreground/60">
-              <motion.span
-                whileHover={{ scale: 1.1, color: "hsl(var(--accent))" }}
-              >
-                Saigon
-              </motion.span>
-              <motion.span
-                className="text-accent"
-                animate={{ x: [0, 5, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                →
-              </motion.span>
-              <motion.span
-                whileHover={{ scale: 1.1, color: "hsl(var(--accent))" }}
-              >
-                New York
-              </motion.span>
-            </div>
-          </motion.div>
-
-          {/* Single powerful statement */}
-          <motion.p
-            className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed font-light"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.0 }}
-          >
-            Aspiring Research Engineer
-          </motion.p>
-
-          {/* Live Coding Animation - positioned prominently */}
-          <motion.div
-            className="pt-4"
-            style={{ opacity: codingOpacity, scale: codingScale }}
-          >
-            <LiveCodingAnimation />
           </motion.div>
 
           {/* Clean CTA buttons with subtle Vietnamese accent */}

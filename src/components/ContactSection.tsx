@@ -26,7 +26,7 @@ export const ContactSection = () => {
   return (
     <section
       id="contact"
-      className="relative py-32 bg-muted/20 overflow-hidden"
+      className="relative py-20 bg-muted/20 overflow-hidden"
     >
       {/* Subtle Vietnamese wave pattern */}
       <div className="absolute bottom-10 left-10 w-40 h-16 opacity-[0.03]">
