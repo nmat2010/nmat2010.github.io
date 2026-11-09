@@ -1,0 +1,84 @@
+\documentclass[letterpaper,10pt]{article}
+\usepackage[margin=0.5in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{tabularx}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\titleformat{\section}{\scshape\large}{}{0em}{}[\titlerule]
+\titlespacing*{\section}{0pt}{6pt}{3pt}
+\setlist[itemize]{leftmargin=0.15in,itemsep=0pt,topsep=1pt,parsep=0pt}
+
+\newcommand{\role}[4]{%
+  \textbf{\underline{#1}} \hfill #2\\
+  \textit{#3} \hfill \textit{#4}\vspace{-1pt}}
+
+\begin{document}
+
+\begin{center}
+  {\Huge \scshape Thu Nguyen}\\[2pt]
+  +1 347-404-0166 $|$ \href{mailto:thunma2010@gmail.com}{\underline{thunma2010@gmail.com}} $|$
+  \href{https://linkedin.com/in/thu-tech}{\underline{linkedin.com/in/thu-tech}} $|$
+  \href{https://github.com/nmat2010}{\underline{github.com/nmat2010}}
+\end{center}
+
+\section{Education}
+\role{\href{https://www.stonybrook.edu}{Stony Brook University}}{May 2028}{Bachelor of Engineering in Computer Engineering}{Stony Brook, NY}
+\begin{itemize}
+  \item \textbf{Awards:} You Are Welcome Here Scholar (50\% Tuition), Global Excellence Scholarship (\$24,000 over 4 years)
+\end{itemize}
+
+\section{Experience}
+\role{\href{https://www.stonybrookmedicine.edu/WTC}{Stony Brook World Trade Center Health Program}}{Stony Brook, NY}{Lead Student Developer}{April 2025 -- Present}
+\begin{itemize}
+  \item Led a \textbf{4-person team} building a searchable 9/11 first-responder interview archive for the Remembering 9/11 Oral History Project; shipped \textbf{40+ merged PRs} and 200+ commits across the \textbf{FastAPI, PostgreSQL (pgvector), React/Vite} stack, delivering demos on time via Jira milestones.
+  \item Built unified \textbf{keyword + semantic search} (embeddings, query expansion, word-level transcripts) for over \textbf{800+ hours} of audio/video; later tuned the pipeline (14+ ranking/performance fixes) and added a video-suggestion algorithm and topic/chapter navigation.
+  \item Built the \textbf{ETL/data pipeline}: AWS S3 storage, metadata and transcript ingestion (490+ transcripts), WhisperX transcript rebuild, and EC2 compression workflows that cut file size \textbf{90\%} with no visible quality loss; pre-generated thumbnails to speed page loads.
+  \item Shipped user-facing features: WebVTT in-video subtitles, auto-generated video outlines/chapters, interview citation tool, vignette/compilation pages with save-and-resume, ``My Library'' (saved and recently watched), and an interactive help tour.
+  \item Led a full UI redesign and accessibility pass (WCAG-oriented dialogs, labelled inputs, captions, responsive/touch/\textbf{kiosk} layouts, Safari mobile fixes) so the archive works for museum visitors and screen-reader users.
+  \item Ran \textbf{DevOps and security}: Dockerized services, Alembic migrations, \textbf{GitHub Actions CI/CD} with automated staging deploys and smoke tests, AWS Secrets Manager, XSS fixes, CSP, rate limiting, dependency scans, \textbf{Redis} caching, request tracing, and \textbf{AWS CloudWatch} production monitoring.
+  \item Deployed an access-controlled staging/demo environment on \textbf{AWS EC2 behind Cloudflare} (nginx, custom-domain DNS, \textbf{Cloudflare Access} email allowlist, Cloudflare Insights analytics) for stakeholder testing.
+  \item Wrote runbooks, API references, and one-command team setup scripts (Linux/macOS/Windows) that cut contributor onboarding from 2 days to 2 hours.
+\end{itemize}
+
+\role{\href{https://fptsoftware.com}{FPT Software}}{Ho Chi Minh City, Vietnam}{Software Engineer Intern}{June 2025 -- August 2025}
+\begin{itemize}
+  \item Led a team of \textbf{5 interns} through Jira sprint planning and code reviews, delivering 100\% of sprint commitments and improving throughput by \textbf{20\%}.
+  \item Built production REST APIs with \textbf{Spring Boot}, JPA/Hibernate, and PostgreSQL using layered architecture and validation; integrated \textbf{Kafka} for asynchronous messaging and \textbf{Keycloak} role-based access control.
+  \item Established a \textbf{JUnit5/Mockito} suite with \textbf{90\%+} coverage, cutting pre-merge defects.
+\end{itemize}
+
+\section{Projects}
+\role{\href{https://devpost.com/software/wolfie-sensei}{Wolfie Sensei -- SBU Hacks 2026}}{Stony Brook, NY}{Electron, TypeScript, React, Gemini API, ElevenLabs, SQLite}{October 2026}
+\begin{itemize}
+  \item Built (with one teammate) an AI study companion for SBU students: a floating pixel-art mascot overlay that watches a study session, flags wrong answers, and offers graduated hints, voice chat, and Brightspace sync.
+  \item Owned the \textbf{desktop front end}: onboarding flow, retro-themed dashboard, mascot sprite animations, page transitions, draggable always-on-top overlay, and Electron IPC for external links; integrated it with the teammate's session-tracking, LLM, and push-to-talk services in a 24-hour merge.
+\end{itemize}
+
+\role{\href{https://devpost.com/software/percepta-4jfs8b}{Percepta -- HackPrinceton'25}}{Princeton, NJ}{Swift, YOLO, ARKit}{November 2025}
+\begin{itemize}
+  \item Shipped an iOS app where users pick a subject ``lens'' (math, physics, biology) and see real-time, subject-specific AR overlays on recognized objects, using on-device \textbf{YOLOv8} segmentation at \textbf{30+ FPS}.
+  \item Connected detections to an LLM and ARKit renderer through a JSON schema with caching/debouncing for low-latency annotations.
+\end{itemize}
+
+\role{\href{https://devpost.com/software/skinguard-ai-dermatologist}{SkinGuard -- HackNYU'25 \textbf{Winner}}}{New York City, NY}{MERN Stack, OpenAI API, EfficientNet-B3, Flask, JWT}{February 2025}
+\begin{itemize}
+  \item Built a skin-condition diagnostic platform (EfficientNet-B3 + OpenAI chatbot) that processed \textbf{1k+ test images} with real-time results; won \textbf{Best First Hack} among 640+ participants.
+  \item Implemented JWT authentication and 10+ React pages from high-fidelity Figma prototypes.
+\end{itemize}
+
+\role{\href{https://devpost.com/software/seesay-1r8svc}{SeeSay -- HopperHack'25 \textbf{AI/ML Winner}}}{Stony Brook, NY}{React, WebGazer.js, Web Speech API, Tailwind}{February 2025}
+\begin{itemize}
+  \item Built a hands-free accessibility browser using eye tracking and voice commands; won \textbf{Best AI/ML Immersion} among 230+ participants.
+  \item Integrated and tuned WebGazer.js to improve gaze accuracy by \textbf{30\%} and cut false activations by \textbf{25\%}, validated through usability testing.
+\end{itemize}
+
+\section{Technical Skills}
+\textbf{Programming}: Python, Java, JavaScript/TypeScript, Swift, SQL, C, C++\\
+\textbf{Backend/Cloud}: FastAPI, Spring Boot, Node/Express, PostgreSQL (pgvector), MongoDB, Redis, AWS (S3, EC2, CloudWatch, Secrets Manager), Docker, GitHub Actions, Cloudflare (DNS, Access), nginx, Kafka, Keycloak, Alembic\\
+\textbf{Frontend}: React, Next.js, Vite, Electron, HTML/CSS, TailwindCSS, video.js, WebVTT, accessibility (WCAG)\\
+\textbf{ML/Search}: PyTorch, WhisperX, sentence embeddings/semantic search, YOLOv8, scikit-learn, Hugging Face, OpenCV, NumPy/pandas
+
+\end{document}

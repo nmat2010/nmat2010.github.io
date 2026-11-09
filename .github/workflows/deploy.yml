@@ -21,6 +21,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Compile resume
+        uses: xu-cong/latex-action@v3
+        with:
+          root_file: resume.tex
+          working_directory: resume
+
+      - name: Publish resume PDF
+        run: cp resume/resume.pdf public/resume.pdf
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:

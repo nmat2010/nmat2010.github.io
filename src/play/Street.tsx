@@ -3,7 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import { Line, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { projects } from "@/data/projects";
-import { labelTexture, postOfficeTexture, signTexture, tarpTexture, tileTexture } from "./textures";
+import { flagTexture, labelTexture, postOfficeTexture, signTexture, tarpTexture, tileTexture } from "./textures";
 import { Box, Tube } from "./kit";
 import { CoffeeGlass, Steam, Vendor } from "./parts";
 import { Model } from "./gfx";
@@ -81,6 +81,46 @@ const Thermos = ({ p }: { p: [number, number, number] }) => (
   </group>
 );
 
+/** A Vietnamese flag on an iron arm bolted to a house front: it hangs from the arm and ripples in the breeze */
+export const WallFlag = ({ side, z, y = 4.4 }: { side: 1 | -1; z: number; y?: number }) => {
+  const map = useMemo(() => flagTexture(), []);
+  const geo = useRef<THREE.PlaneGeometry>(null);
+  const base = useMemo(() => Float32Array.from(new THREE.PlaneGeometry(1.4, 0.93, 16, 8).attributes.position.array), []);
+  useFrame((s) => {
+    const g = geo.current;
+    if (!g) return;
+    const pos = g.attributes.position;
+    const t = s.clock.elapsedTime;
+    for (let i = 0; i < pos.count; i++) {
+      const x = base[i * 3];
+      const yy = base[i * 3 + 1];
+      const free = (x + 0.7) / 1.4; // 0 at the wall, 1 at the loose end
+      pos.setZ(i, Math.sin(x * 5 - t * 2.6 + yy * 2) * 0.07 * free * (0.4 + (0.465 - yy) / 0.93));
+    }
+    pos.needsUpdate = true;
+    g.computeVertexNormals();
+  });
+  return (
+    // local +x runs from the wall out over the street
+    <group position={[side * 3.185, y, z]} rotation={[0, side > 0 ? Math.PI : 0, 0]}>
+      <Box p={[0.02, 0.1, 0]} s={[0.04, 0.5, 0.2]} c="#14111a" />
+      <mesh position={[0.78, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.022, 0.022, 1.56, 8]} />
+        <meshStandardMaterial color="#6b4a2f" roughness={0.7} />
+      </mesh>
+      {/* the strut runs above the arm, clear of the cloth */}
+      <mesh position={[0.31, 0.175, 0]} rotation={[0, 0, 1.03]}>
+        <boxGeometry args={[0.03, 0.68, 0.03]} />
+        <meshStandardMaterial color="#14111a" />
+      </mesh>
+      <mesh position={[0.78, -0.465, 0]}>
+        <planeGeometry ref={geo} args={[1.4, 0.93, 16, 8]} />
+        <meshStandardMaterial map={map} roughness={0.9} side={THREE.DoubleSide} />
+      </mesh>
+    </group>
+  );
+};
+
 /* ---------- Nhà: a Saigon tube house with porch, gate and balcony ---------- */
 
 export const HouseFront = () => {
@@ -89,7 +129,7 @@ export const HouseFront = () => {
     t.repeat.set(2, 6);
     return t;
   }, []);
-  const plate = useMemo(() => signTexture("12/4", null, "enamel"), []);
+  const plate = useMemo(() => signTexture("290 NTT", null, "enamel"), []);
   return (
     <group>
       {/* tiled porch */}
@@ -158,24 +198,28 @@ export const HouseFront = () => {
       ))}
       <Box p={[2.12, 5.9, 0]} s={[0.05, 0.05, 6]} c="#14111a" />
       <Box p={[2.12, 5.05, 0]} s={[0.05, 0.05, 6]} c="#14111a" />
+      {/* pots stand on the deck, well inside the rail */}
       {[-1.8, 0.4, 2.1].map((z, i) => (
-        <group key={i} position={[2.3, 5.0, z]}>
+        <group key={i} position={[2.7, 4.98, z]}>
           <mesh position={[0, 0.15, 0]}>
             <cylinderGeometry args={[0.15, 0.11, 0.3, 10]} />
             <meshStandardMaterial color="#b4572f" />
           </mesh>
           <mesh position={[0, 0.5, 0]}>
-            <sphereGeometry args={[0.3, 10, 8]} />
+            <sphereGeometry args={[0.22, 10, 8]} />
             <meshStandardMaterial color={i === 1 ? "#d8342b" : "#2f8a5a"} />
           </mesh>
         </group>
       ))}
+      {/* the bird cage hangs from an iron arm bolted to the wall */}
+      <Box p={[2.7, 6.9, 1.0]} s={[0.9, 0.04, 0.04]} c="#14111a" />
+      <Box p={[3.1, 6.7, 1.0]} s={[0.04, 0.4, 0.04]} c="#14111a" />
       <Cage p={[2.3, 6.6, 1.0]} />
       {/* plants and shoes by the door, a bicycle against the column */}
       <Model name="planter_box_01" w={1.0} pos={[1.8, 0.28, -2.6]} rot={[0, Math.PI / 2, 0]} />
       <Model name="potted_plant_04" h={0.7} pos={[1.8, 0.28, -2.0]} />
       <Model name="planter_box_01" w={0.9} pos={[1.8, 0.28, 1.5]} rot={[0, Math.PI / 2, 0]} />
-      <Bicycle p={[2.0, 0.28, 2.6]} />
+      <Bicycle p={[2.45, 0.3, -1.55]} />
     </group>
   );
 };
@@ -212,9 +256,9 @@ const Cage = ({ p }: { p: [number, number, number] }) => {
 };
 
 export const Bicycle = ({ p }: { p: [number, number, number] }) => (
-  <group position={p} rotation={[0, 0, 0]}>
+  <group position={p} scale={0.8}>
     {[-0.5, 0.5].map((z) => (
-      <mesh key={z} position={[0, 0.3, z]} rotation={[0, 0, Math.PI / 2]}>
+      <mesh key={z} position={[0, 0.3, z]} rotation={[0, Math.PI / 2, 0]}>
         <torusGeometry args={[0.3, 0.02, 6, 20]} />
         <meshStandardMaterial color="#14111a" />
       </mesh>
@@ -222,6 +266,12 @@ export const Bicycle = ({ p }: { p: [number, number, number] }) => (
     <Box p={[0, 0.55, 0]} s={[0.03, 0.03, 1.0]} c="#1b4b9b" />
     <Box p={[0, 0.42, 0.1]} s={[0.03, 0.4, 0.03]} c="#1b4b9b" />
     <Box p={[0, 0.9, 0.5]} s={[0.4, 0.03, 0.03]} c="#14111a" />
+    <Box p={[0, 0.6, 0.5]} s={[0.03, 0.62, 0.03]} c="#14111a" />
+    {/* kickstand: it leans on this, not on the house */}
+    <mesh position={[0.05, 0.17, -0.2]} rotation={[0, 0, 0.27]}>
+      <boxGeometry args={[0.02, 0.38, 0.02]} />
+      <meshStandardMaterial color="#14111a" />
+    </mesh>
     <Box p={[0, 0.7, -0.35]} s={[0.12, 0.04, 0.26]} c="#14111a" />
     {/* wire basket */}
     <mesh position={[0, 0.78, 0.62]}>

@@ -197,29 +197,139 @@
     font-family: "Courier Prime", "Courier New", monospace;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    font-size: 0.82rem;
     line-height: 1.5;
-    color: #4a3820;
+    color: #2f2212;
+    text-shadow: none;
   }
   .vintage-paper .np-body,
   .vintage-paper .np-copy,
   .vintage-paper .np-copy li {
     font-family: "Newsreader", Georgia, serif;
     font-weight: 500;
-    font-size: 1.06rem;
-    line-height: 1.5;
+    font-size: 1.14rem;
+    line-height: 1.55;
     color: #2a2118;
+    text-shadow: none;
   }
   .vintage-paper .np-subhead {
     font-family: "Oswald", sans-serif;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    font-size: 0.82rem;
+    font-size: 0.9rem;
     color: #1d150d;
+    text-shadow: none;
   }
 
+  /* Printed graphics for the Experience news: a halftone logo plate, boxed figures, a five-step diagram */
+  .np-plate-img {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 3 / 2;
+    padding: 0.4rem;
+    border: 1px solid hsl(var(--card-foreground) / 0.55);
+    outline: 3px double hsl(var(--card-foreground) / 0.35);
+    outline-offset: 2px;
+    background: hsl(var(--card-foreground) / 0.06);
+  }
+  .np-plate-img img {
+    mix-blend-mode: multiply;
+    filter: sepia(0.4) contrast(1.08) saturate(0.85);
+  }
+  .np-plate-img::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    opacity: 0.35;
+    background-image: radial-gradient(circle at center, hsl(var(--card-foreground) / 0.7) 0.7px, transparent 1.1px);
+    background-size: 3.5px 3.5px;
+  }
+  .np-cap {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    line-height: 1.35;
+    color: hsl(var(--card-foreground) / 0.92);
+    text-shadow: none;
+  }
+  .np-stats {
+    border-top: 4px double hsl(var(--card-foreground) / 0.7);
+    border-bottom: 1px solid hsl(var(--card-foreground) / 0.5);
+  }
+  .np-stat {
+    padding: 0.6rem 0.75rem 0.7rem;
+    border-left: 1px solid hsl(var(--card-foreground) / 0.3);
+  }
+  .np-stat:nth-child(odd) {
+    border-left: 0;
+    padding-left: 0;
+  }
+  @media (min-width: 768px) {
+    .np-stat:nth-child(odd) {
+      border-left: 1px solid hsl(var(--card-foreground) / 0.3);
+      padding-left: 0.75rem;
+    }
+    .np-stat:first-child {
+      border-left: 0;
+      padding-left: 0;
+    }
+  }
+  .np-num {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    line-height: 1.05;
+    text-shadow: none;
+    letter-spacing: 0.01em;
+    color: hsl(var(--card-foreground));
+  }
+  .np-pipeline {
+    display: grid;
+    gap: 0.25rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .np-step {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .np-step-card {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    column-gap: 0.75rem;
+    align-items: center;
+    align-content: start;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid hsl(var(--card-foreground) / 0.6);
+  }
+  .np-step-card svg {
+    grid-row: span 2;
+    color: hsl(var(--lantern));
+  }
+  .np-step-name {
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    text-shadow: none;
+  }
+  .np-arrow {
+    align-self: center;
+    width: 1.1rem;
+    height: 0.6rem;
+    margin: 0.15rem 0;
+    transform: rotate(90deg);
+    color: hsl(var(--card-foreground) / 0.7);
+  }
   .drift {
     animation: drift 28s ease-in-out infinite alternate;
   }
