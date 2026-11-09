@@ -2,89 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* World: a Saigon hẻm by day. Sunlit cream ground, enamel street-sign blue, lantern red, marigold,
+   tile teal, chalk. Colors are HSL. One theme: the dusk is the design. */
 
 @layer base {
-  :root {
-    /* Neutral base + deep burnt orange accent */
-    --background: 60 10% 98%; /* #FAFAF8 - warm off-white */
-    --foreground: 0 0% 10%; /* #1A1A1A - near-black */
-
-    --card: 60 10% 99%;
-    --card-foreground: 0 0% 10%;
-
-    --popover: 60 10% 99%;
-    --popover-foreground: 0 0% 10%;
-
-    --primary: 15 59% 45%; /* Deep burnt orange */
-    --primary-foreground: 60 10% 98%;
-
-    --secondary: 15 45% 35%; /* Darker variant of burnt orange */
-    --secondary-foreground: 60 10% 98%;
-
-    --muted: 60 8% 94%;
-    --muted-foreground: 0 0% 40%;
-
-    --accent: 15 59% 45%; /* #B5502F - Deep burnt orange */
-    --accent-foreground: 60 10% 98%;
-
-    --destructive: 0 70% 55%;
-    --destructive-foreground: 60 10% 98%;
-
-    --border: 60 6% 88%;
-    --input: 60 6% 88%;
-    --ring: 15 59% 45%;
-
-    --radius: 0.75rem;
-
-    /* Portfolio-specific tokens */
-    --hero-gradient-start: 15 59% 45%;
-    --hero-gradient-end: 15 65% 35%;
-    --glass-bg: 60 10% 97%;
-    --glass-border: 60 8% 90%;
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --shadow-soft: 0 10px 40px -10px hsl(0 0% 0% / 0.06);
-    --shadow-glow: 0 0 40px hsl(15 59% 45% / 0.15);
-  }
-
+  :root,
   .dark {
-    --background: 0 0% 9%; /* #161616 - charcoal */
-    --foreground: 43 20% 92%; /* #EDEBE6 - warm off-white */
+    --background: 42 58% 89%;
+    --foreground: 24 34% 12%;
 
-    --card: 0 0% 11%;
-    --card-foreground: 43 20% 92%;
+    --card: 44 70% 96%;
+    --card-foreground: 24 34% 11%;
+    --popover: 44 70% 96%;
+    --popover-foreground: 24 34% 11%;
 
-    --popover: 0 0% 11%;
-    --popover-foreground: 43 20% 92%;
+    --primary: 24 36% 16%;
+    --primary-foreground: 44 70% 93%;
+    --secondary: 40 40% 80%;
+    --secondary-foreground: 24 34% 12%;
 
-    --primary: 20 64% 54%; /* Brightened burnt orange */
-    --primary-foreground: 0 0% 9%;
+    --muted: 40 38% 82%;
+    --muted-foreground: 26 24% 30%;
 
-    --secondary: 20 50% 42%; /* Darker variant of brightened orange */
-    --secondary-foreground: 43 20% 92%;
+    --accent: 8 62% 40%;
+    --accent-foreground: 44 70% 93%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 60%;
+    --destructive: 4 72% 50%;
+    --destructive-foreground: 40 45% 92%;
 
-    --accent: 20 64% 54%; /* #D4713F - Brightened burnt orange */
-    --accent-foreground: 0 0% 9%;
+    --border: 30 30% 62%;
+    --input: 30 30% 62%;
+    --ring: 8 62% 40%;
 
-    --destructive: 0 62.8% 40%;
-    --destructive-foreground: 43 20% 92%;
-
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 20 64% 54%;
-
-    /* Dark mode portfolio tokens */
-    --hero-gradient-start: 0 0% 9%;
-    --hero-gradient-end: 0 0% 6%;
-    --glass-bg: 0 0% 11%;
-    --glass-border: 0 0% 20%;
-    --shadow-soft: 0 10px 40px -10px hsl(0 0% 0% / 0.4);
-    --shadow-glow: 0 0 60px hsl(20 64% 54% / 0.2);
+    --lantern: 8 62% 40%;
+    --marigold: 38 72% 55%;
+    --enamel: 212 48% 34%;
+    --tile: 170 36% 36%;
+    --radius: 0.5rem;
   }
 }
 
@@ -93,104 +47,238 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground;
-  }
-
-  /* Grid pattern background */
-  .bg-grid-pattern {
-    background-image:
-      linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px);
-    background-size: 40px 40px;
-  }
-
-  /* Custom Scrollbar Styling */
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: hsl(var(--muted));
-    border-radius: 4px;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: hsl(var(--accent) / 0.5);
-    border-radius: 4px;
-    transition: background 0.2s ease;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--accent) / 0.8);
-  }
-
-  /* Firefox scrollbar styling */
-  .custom-scrollbar {
+  html {
+    scroll-padding-top: 5rem;
+    scroll-behavior: smooth;
     scrollbar-width: thin;
-    scrollbar-color: hsl(var(--accent) / 0.5) hsl(var(--muted));
+    scrollbar-color: hsl(var(--lantern) / 0.5) hsl(var(--background));
   }
 
-  /* Global smooth scrollbar for main page */
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: hsl(var(--lantern));
+    color: hsl(40 45% 96%);
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--marigold));
+    outline-offset: 3px;
+  }
+
   ::-webkit-scrollbar {
     width: 10px;
   }
-
   ::-webkit-scrollbar-track {
     background: hsl(var(--background));
   }
-
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--accent) / 0.3);
+    background: hsl(var(--lantern) / 0.45);
     border-radius: 5px;
   }
-
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--accent) / 0.6);
+    background: hsl(var(--lantern) / 0.75);
   }
 }
 
-@layer utilities {
-  /* Floating animation for scroll indicators */
-  @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
+@layer components {
+  /* Painted shop board: chalk ground with a thin ink rule, used for every content panel */
+  .board {
+    position: relative;
+    background: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+    border-radius: 14px;
+    box-shadow:
+      0 0 0 3px hsl(var(--card)),
+      0 0 0 5px hsl(var(--card-foreground) / 0.85),
+      0 22px 40px -18px hsl(232 60% 3% / 0.7);
   }
 
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
+  /* Enamel street-name plate: white lettering on blue with a white keyline */
+  .plate {
+    display: inline-block;
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1;
+    color: #fff;
+    background: hsl(var(--enamel));
+    padding: 0.5rem 1.1rem 0.4rem;
+    border-radius: 6px;
+    box-shadow:
+      inset 0 0 0 2px hsl(var(--enamel)),
+      inset 0 0 0 3.5px #fff;
   }
 
-  /* Pulse glow animation */
-  @keyframes pulse-glow {
-    0%,
-    100% {
-      box-shadow: 0 0 20px hsl(var(--accent) / 0.3);
-    }
-    50% {
-      box-shadow: 0 0 30px hsl(var(--accent) / 0.6);
-    }
+  .link-ink {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+    text-decoration-color: hsl(var(--foreground) / 0.45);
+    transition: text-decoration-color 0.2s, color 0.2s;
+  }
+  .link-ink:hover {
+    color: hsl(var(--lantern));
+    text-decoration-color: currentColor;
   }
 
-  .animate-pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
+  .link-card {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+    text-decoration-color: hsl(var(--card-foreground) / 0.4);
+    transition: text-decoration-color 0.2s, color 0.2s;
+  }
+  .link-card:hover {
+    color: hsl(var(--lantern));
+    text-decoration-color: currentColor;
   }
 
-  /* Gradient text */
-  .text-gradient {
-    @apply bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent;
+  /* Yellowed 1960s newsprint: foxed edges, a centre fold, grain, ink that spreads a little */
+  .vintage-paper {
+    position: relative;
+    isolation: isolate;
+    color: #2a2118;
+    background-color: #dfcd9d;
+    background-image:
+      radial-gradient(ellipse at 50% 45%, transparent 50%, rgba(110, 72, 28, 0.38) 100%),
+      radial-gradient(circle at 18% 22%, rgba(120, 76, 28, 0.16) 0, transparent 14%),
+      radial-gradient(circle at 82% 70%, rgba(120, 76, 28, 0.18) 0, transparent 16%),
+      linear-gradient(90deg, transparent 49.6%, rgba(70, 44, 18, 0.22) 50%, rgba(255, 245, 210, 0.25) 50.4%, transparent 50.8%);
+    text-shadow: 0 0 1px rgba(42, 33, 24, 0.35);
+  }
+  .vintage-paper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.25 0 0 0 0 0.1 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* Glass morphism effect */
-  .glass {
-    background: hsl(var(--glass-bg) / 0.8);
-    backdrop-filter: blur(10px);
-    border: 1px solid hsl(var(--glass-border));
+
+  /* Experience set as a 1960s newspaper: bold condensed headlines, a typewriter dateline, readable book-serif copy */
+  .vintage-paper .np-headline {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-stretch: 100%;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.08;
+    font-size: clamp(1.35rem, 2.6vw, 1.85rem);
+    color: #1d150d;
+    text-shadow: 0 0 1px rgba(29, 21, 13, 0.55);
+  }
+  .vintage-paper .np-deck {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 1.08rem;
+    color: #3a2c1c;
+  }
+  .vintage-paper .np-dateline {
+    font-family: "Courier Prime", "Courier New", monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.74rem;
+    line-height: 1.5;
+    color: #4a3820;
+  }
+  .vintage-paper .np-body,
+  .vintage-paper .np-copy,
+  .vintage-paper .np-copy li {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 500;
+    font-size: 1.06rem;
+    line-height: 1.5;
+    color: #2a2118;
+  }
+  .vintage-paper .np-subhead {
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.82rem;
+    color: #1d150d;
+  }
+
+  .drift {
+    animation: drift 28s ease-in-out infinite alternate;
+  }
+
+  .seawolf-bob {
+    animation: seawolf-bob 2.6s ease-in-out infinite;
+  }
+
+  .rise-in {
+    opacity: 0;
+    animation: rise-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s) forwards;
+  }
+
+  .sway {
+    transform-origin: 50% 0;
+    animation: sway 4.5s ease-in-out var(--d, 0s) infinite alternate;
+  }
+}
+
+@keyframes seawolf-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2deg);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: scale(1.04) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.13) translate3d(-1.5%, -1%, 0);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise-in {
+    animation: none;
+    opacity: 1;
+  }
+  .drift,
+  .seawolf-bob {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
   }
 }

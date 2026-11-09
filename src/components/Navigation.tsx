@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
-import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "@/components/ui/button";
 
-export const Navigation = () => {
+export const Navigation = ({ onPlay, onHome }: { onPlay: () => void; onHome: () => void }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -49,36 +48,48 @@ export const Navigation = () => {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-[999] transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-[999] transition-all duration-300 text-foreground ${
           isScrolled
-            ? "bg-background/95 backdrop-blur-lg border-b border-border shadow-sm"
-            : "bg-background/80 backdrop-blur-sm"
+            ? "bg-background/90 backdrop-blur-md border-b border-border"
+            : "bg-transparent"
         }`}
       >
-        <div className="container mx-auto px-6 py-4 relative z-10">
+        <div className="max-w-[75rem] mx-auto py-4 px-6 relative z-10">
           <div className="flex items-center justify-between">
-            <div className="text-xl font-bold text-foreground relative z-[1000]">
+            <a href="#hero" className="text-lg font-bold tracking-tight text-foreground relative z-[1000]">
               Thu Nguyen
-            </div>
+            </a>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8 relative z-[1000]">
+              <button onClick={onHome} className="text-sm font-medium text-foreground hover:text-accent transition-colors pointer-events-auto link-ink">
+                Homepage
+              </button>
               {navLinks.map((link) => (
                 <button
                   key={link.id}
                   onClick={() => scrollToSection(link.id)}
-                  className="text-sm font-medium text-foreground/80 hover:text-accent transition-colors relative group pointer-events-auto"
+                  className="text-sm font-medium text-foreground hover:text-accent transition-colors pointer-events-auto link-ink"
                 >
                   {link.label}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full" />
                 </button>
               ))}
-              <ThemeToggle />
+              <button
+                onClick={onPlay}
+                className="rounded-md bg-primary px-3.5 py-1.5 text-sm font-bold text-primary-foreground transition-colors hover:bg-lantern hover:text-white"
+              >
+                My little Saigon alley
+              </button>
             </div>
 
             {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center gap-4 relative z-[1000]">
-              <ThemeToggle />
+              <button
+                onClick={onPlay}
+                className="rounded-md bg-primary px-3 py-1.5 text-sm font-bold text-primary-foreground"
+              >
+                Play
+              </button>
               <Button
                 variant="ghost"
                 size="icon"
@@ -110,7 +121,7 @@ export const Navigation = () => {
           <div className="px-6 pb-4">
             <button
               onClick={() => setIsMobileMenuOpen(false)}
-              className="ml-auto flex items-center gap-2 px-6 py-3 bg-accent/10 hover:bg-accent/20 text-accent rounded-full font-medium transition-all"
+              className="ml-auto flex items-center gap-2 px-6 py-3 bg-foreground text-background rounded-sm font-medium transition-all"
             >
               <X className="w-5 h-5" />
               Close Menu
@@ -122,11 +133,20 @@ export const Navigation = () => {
             className="px-6 py-4 space-y-2"
             onClick={(e) => e.stopPropagation()}
           >
+            <button
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                onHome();
+              }}
+              className="block w-full text-left text-4xl font-bold tracking-tight text-foreground hover:text-accent transition-colors py-4 border-b border-border"
+            >
+              Homepage
+            </button>
             {navLinks.map((link, index) => (
               <button
                 key={link.id}
                 onClick={() => scrollToSection(link.id)}
-                className="block w-full text-left text-2xl font-semibold text-foreground/80 hover:text-accent transition-all py-4 px-4 rounded-lg hover:bg-accent/5 border-b border-border/50"
+                className="block w-full text-left text-4xl font-bold tracking-tight text-foreground hover:text-accent transition-colors py-4 border-b border-border"
                 style={{
                   animationDelay: `${index * 0.1}s`,
                 }}

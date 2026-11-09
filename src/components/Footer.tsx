@@ -1,13 +1,10 @@
-export const Footer = () => {
-  return (
-    <footer className="py-12 border-t border-border bg-background">
-      <div className="container mx-auto px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} Thu Nguyen
-          </p>
-        </div>
-      </div>
-    </footer>
-  );
-};
+export const Footer = () => (
+  <footer className="px-6 pb-10">
+    <div className="max-w-5xl mx-auto pt-6 border-t border-border flex items-center justify-between text-sm text-muted-foreground">
+      <p>© {new Date().getFullYear()} Thu Nguyen</p>
+      <a href="#hero" className="link-ink">
+        Back to top
+      </a>
+    </div>
+  </footer>
+);
