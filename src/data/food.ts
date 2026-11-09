@@ -2,6 +2,7 @@
 export const dishes = [
   { file: "comtam", name: "Cơm tấm" },
   { file: "banhkhot", name: "Bánh khọt" },
+  { file: "banhhoi", name: "Bánh hỏi" },
   { file: "caphesuada", name: "Cà phê sữa đá" },
   { file: "japanesecurry", name: "Japanese curry" },
   { file: "steakpasta", name: "Steak pasta" },

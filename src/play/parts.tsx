@@ -327,14 +327,12 @@ export const Pet = ({
       ) : (
         <>
           {/* a friendly tan dog */}
-          <mesh position={[0, 0.46, -0.02]} scale={[0.2, 0.2, 0.46]}>
+          <mesh position={[0, 0.46, -0.04]} scale={[0.18, 0.19, 0.4]}>
             <sphereGeometry args={[1, 22, 18]} />
             {mat("#c99a5b")}
           </mesh>
-          <mesh position={[0, 0.5, 0.3]} scale={[0.2, 0.22, 0.22]}>
-            <sphereGeometry args={[1, 18, 14]} />
-            {mat("#c99a5b")}
-          </mesh>
+          {/* the head sits straight on the shoulders: no neck */}
+          <group position={[0, -0.1, -0.1]}>
           <mesh position={[0, 0.72, 0.5]} scale={[0.15, 0.15, 0.16]}>
             <sphereGeometry args={[1, 20, 16]} />
             {mat("#d3a669")}
@@ -359,19 +357,17 @@ export const Pet = ({
               </mesh>
             </group>
           ))}
-          <mesh position={[0, 0.6, 0.34]} rotation={[Math.PI / 2 + 0.2, 0, 0]}>
-            <torusGeometry args={[0.15, 0.018, 8, 22]} />
-            <meshStandardMaterial color="#a8392b" roughness={0.5} />
-          </mesh>
+          </group>
+          {/* legs run up into the body, so nothing floats */}
           {[-1, 1].flatMap((sx) =>
-            [-1, 1].map((sz) => (
-              <mesh key={`${sx}${sz}`} position={[sx * 0.11, 0.2, sz * 0.27 + 0.02]}>
-                <capsuleGeometry args={[0.045, 0.22, 4, 8]} />
+            [0.22, -0.28].map((z) => (
+              <mesh key={`${sx}${z}`} position={[sx * 0.09, 0.25, z]}>
+                <capsuleGeometry args={[0.055, 0.3, 4, 8]} />
                 {mat("#b88a50")}
               </mesh>
             )),
           )}
-          <mesh ref={tail} position={[0, 0.55, -0.45]} rotation={[0.9, 0, 0]}>
+          <mesh ref={tail} position={[0, 0.52, -0.36]} rotation={[-0.9, 0, 0]}>
             <capsuleGeometry args={[0.03, 0.24, 4, 8]} />
             {mat("#c99a5b")}
           </mesh>

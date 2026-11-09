@@ -2,9 +2,11 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Section } from "./Section";
-import { experiences, isCategorised } from "@/data/experience";
+import { experiences, isCategorised, wtcCommitsByMonth } from "@/data/experience";
+import { CommitChart, LogoPlate, PipelineFigure, StatStrip } from "./ExperienceGraphics";
 
-export const ExperienceBody = () => {
+/** `graphics` adds the printed extras (logo plate, figures, charts); View mode leaves them off to stay minimal. */
+export const ExperienceBody = ({ graphics = false }: { graphics?: boolean }) => {
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [expandedSubsections, setExpandedSubsections] = useState<{ [key: string]: boolean }>({});
 
@@ -27,21 +29,32 @@ export const ExperienceBody = () => {
               <button
                 onClick={() => toggleItem(index)}
                 aria-expanded={open}
-                className="w-full py-7 text-left grid grid-cols-[auto_1fr_auto] md:grid-cols-[3rem_12rem_1fr_auto] gap-x-5 gap-y-1 items-start group"
+                className={
+                  graphics
+                    ? "w-full pt-7 pb-2 text-left grid grid-cols-[1fr_auto] md:grid-cols-[8.5rem_1fr_auto] gap-x-5 gap-y-1 items-start group"
+                    : "w-full py-7 text-left grid grid-cols-[auto_1fr_auto] md:grid-cols-[3rem_12rem_1fr_auto] gap-x-5 gap-y-1 items-start group"
+                }
               >
-                <span className="w-12 h-12 bg-white border border-card-foreground/25 overflow-hidden flex items-center justify-center">
-                  <img src={exp.logo} alt="" className="w-full h-full object-contain p-1" />
-                </span>
-                <span className="np-dateline text-sm text-card-foreground/75 leading-relaxed order-last col-span-3 col-start-1 md:order-none md:col-span-1 md:col-start-auto">
+                {!graphics && (
+                  <span className="w-12 h-12 bg-white border border-card-foreground/25 overflow-hidden flex items-center justify-center">
+                    <img src={exp.logoMark ?? exp.logo} alt="" className="w-full h-full object-contain p-1" />
+                  </span>
+                )}
+                <span className={`np-dateline text-sm text-card-foreground/75 leading-relaxed order-last ${graphics ? "col-span-2 md:col-span-1" : "col-span-3 col-start-1 md:col-span-1 md:col-start-auto"} md:order-none`}>
                   {exp.period}
                   <span className="block">{exp.location}</span>
                 </span>
                 <span className="block">
+                  {graphics && (
+                    <span className="float-right ml-4 mb-2 w-36 md:w-48">
+                      <LogoPlate src={exp.logo} caption={exp.logoCaption} />
+                    </span>
+                  )}
                   <span className="np-headline block text-xl md:text-2xl font-bold tracking-[-0.02em] [font-stretch:92%] group-hover:text-lantern transition-colors">
                     {exp.title}
                   </span>
                   <span className="np-deck block font-medium mt-0.5">{exp.company}</span>
-                  <span className="np-body block font-serif text-lg leading-snug text-card-foreground/80 mt-3 max-w-[52ch]">
+                  <span className={`np-body block font-serif text-lg leading-snug text-card-foreground/80 mt-3 ${graphics ? (index === 0 ? "np-lead" : "") : "max-w-[52ch]"}`}>
                     {exp.description}
                   </span>
                 </span>
@@ -49,6 +62,14 @@ export const ExperienceBody = () => {
                   className={`h-5 w-5 mt-1 text-card-foreground/70 transition-transform duration-300 ${open ? "rotate-45" : ""}`}
                 />
               </button>
+
+              {graphics && (exp.stats || exp.figures) && (
+                <div className="clear-both pb-6 md:pl-[9.75rem]">
+                  {exp.stats && <StatStrip stats={exp.stats} />}
+                  {exp.figures?.includes("pipeline") && <PipelineFigure />}
+                  {exp.figures?.includes("commits") && <CommitChart months={wtcCommitsByMonth} />}
+                </div>
+              )}
 
               <AnimatePresence initial={false}>
                 {open && (
@@ -59,7 +80,7 @@ export const ExperienceBody = () => {
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <div className="pb-8 md:pl-[4.25rem] space-y-8">
+                    <div className={`pb-8 space-y-8 ${graphics ? "md:pl-[9.75rem]" : "md:pl-[4.25rem]"}`}>
                       {exp.tldr && (
                         <div className="border-l border-card-foreground/40 pl-5">
                           <h4 className="np-subhead font-semibold mb-3">Key highlights</h4>
