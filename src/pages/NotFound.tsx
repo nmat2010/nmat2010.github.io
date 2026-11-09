@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Home, RefreshCcw, Search } from "lucide-react";
+import { Home, RefreshCcw } from "lucide-react";
 
 const NotFound = () => {
   const location = useLocation();
