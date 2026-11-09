@@ -21,7 +21,8 @@ const finish = (canvas: HTMLCanvasElement) => {
 
 export type ShopKind = "shutter" | "open" | "none";
 
-/** One hẻm house front: tiled wall, shuttered windows, rails, plants, AC boxes, a ground floor. */
+/** One hẻm house front, French-colonial by way of Saigon: arched shuttered windows, iron balconies, a cornice,
+ *  water stains and peeling plaster, laundry on bamboo poles. */
 export const facadeTexture = (wall: string, trim: string, seed: number, shop: ShopKind) => {
   const W = 512;
   const H = 1280;
@@ -29,58 +30,160 @@ export const facadeTexture = (wall: string, trim: string, seed: number, shop: Sh
   const r = rng(seed);
   ctx.fillStyle = wall;
   ctx.fillRect(0, 0, W, H);
-  for (let i = 0; i < 260; i++) {
-    ctx.fillStyle = `rgba(20,16,30,${0.02 + r() * 0.05})`;
-    ctx.fillRect(r() * W, r() * H, 2 + r() * 26, 1 + r() * 60);
+  // mottled, sun-faded plaster
+  for (let i = 0; i < 320; i++) {
+    ctx.fillStyle = r() > 0.5 ? `rgba(60,40,20,${0.02 + r() * 0.05})` : `rgba(255,245,220,${0.03 + r() * 0.05})`;
+    ctx.fillRect(r() * W, r() * H, 4 + r() * 40, 2 + r() * 70);
   }
   const floors = 4;
   const fh = 256;
+  const green = "#4a7a66";
+  const slats = (x: number, y: number, w: number, h: number, c: string) => {
+    ctx.fillStyle = c;
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = "rgba(0,0,0,0.28)";
+    for (let yy = y + 5; yy < y + h; yy += 7) ctx.fillRect(x, yy, w, 2);
+  };
   for (let f = 0; f < floors; f++) {
     const y0 = f * fh + 20;
+    // moulded floor band
     ctx.fillStyle = trim;
-    ctx.fillRect(0, y0 + fh - 28, W, 10);
+    ctx.fillRect(0, y0 + fh - 28, W, 8);
+    ctx.fillStyle = "rgba(0,0,0,0.18)";
+    ctx.fillRect(0, y0 + fh - 20, W, 4);
     for (let w = 0; w < 2; w++) {
       const x = 56 + w * 230;
-      const lit = r() > 0.5;
+      const mode = r();
+      const lit = mode > 0.7;
+      // frame and arched head with keystone
       ctx.fillStyle = trim;
-      ctx.fillRect(x - 8, y0 + 34, 164, 146);
-      ctx.fillStyle = lit ? "#f3e2a8" : "#7f98a8";
-      ctx.fillRect(x, y0 + 42, 148, 130);
-      ctx.strokeStyle = "rgba(20,16,30,0.55)";
-      ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(x + 74, y0 + 42);
-      ctx.lineTo(x + 74, y0 + 172);
-      ctx.stroke();
-      if (!lit && r() > 0.5) {
-        ctx.fillStyle = "#3a8a6a";
+      ctx.moveTo(x - 8, y0 + 182);
+      ctx.lineTo(x - 8, y0 + 62);
+      ctx.quadraticCurveTo(x + 74, y0 + 6, x + 156, y0 + 62);
+      ctx.lineTo(x + 156, y0 + 182);
+      ctx.fill();
+      ctx.fillRect(x - 14, y0 + 178, 176, 8);
+      ctx.fillStyle = lit ? "#f3e2a8" : "#6f8896";
+      ctx.beginPath();
+      ctx.moveTo(x, y0 + 176);
+      ctx.lineTo(x, y0 + 64);
+      ctx.quadraticCurveTo(x + 74, y0 + 20, x + 148, y0 + 64);
+      ctx.lineTo(x + 148, y0 + 176);
+      ctx.fill();
+      ctx.fillStyle = trim;
+      ctx.fillRect(x + 66, y0 + 22, 16, 20);
+      if (mode < 0.38) {
+        // shutters pulled shut
+        slats(x + 2, y0 + 66, 144, 110, green);
+        ctx.fillStyle = "rgba(0,0,0,0.4)";
+        ctx.fillRect(x + 73, y0 + 66, 2, 110);
+      } else {
+        // glass with a mullion, and the louvred leaves folded open to each side
+        ctx.strokeStyle = "rgba(20,16,30,0.55)";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(x + 74, y0 + 36);
+        ctx.lineTo(x + 74, y0 + 176);
+        ctx.moveTo(x, y0 + 110);
+        ctx.lineTo(x + 148, y0 + 110);
+        ctx.stroke();
+        slats(x - 38, y0 + 56, 36, 124, green);
+        slats(x + 150, y0 + 56, 36, 124, green);
+      }
+      // a pot of plants on the sill
+      if (r() > 0.55) {
+        ctx.fillStyle = "#a45a38";
+        ctx.fillRect(x + 20, y0 + 166, 40, 14);
+        ctx.fillStyle = "#3a8a5a";
         for (let i = 0; i < 4; i++) {
           ctx.beginPath();
-          ctx.arc(x + 20 + i * 34, y0 + 180, 12 + r() * 8, 0, Math.PI * 2);
+          ctx.arc(x + 26 + i * 9, y0 + 160 - r() * 8, 9 + r() * 5, 0, Math.PI * 2);
           ctx.fill();
         }
       }
+      // rain stains running down from the sill
+      for (let i = 0; i < 3; i++) {
+        ctx.fillStyle = `rgba(50,35,20,${0.07 + r() * 0.08})`;
+        ctx.fillRect(x + 6 + r() * 130, y0 + 188, 6 + r() * 10, 30 + r() * 38);
+      }
     }
-    // balcony rail
-    ctx.strokeStyle = "#14111a";
+    // wrought-iron balcony: scrolls between the verticals
+    ctx.strokeStyle = "#1c1814";
     ctx.lineWidth = 3;
     for (let x = 30; x < W - 30; x += 22) {
       ctx.beginPath();
       ctx.moveTo(x, y0 + fh - 78);
       ctx.lineTo(x, y0 + fh - 30);
       ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x + 11, y0 + fh - 52, 7, 0, Math.PI * 2);
+      ctx.stroke();
     }
     ctx.beginPath();
     ctx.moveTo(30, y0 + fh - 78);
     ctx.lineTo(W - 30, y0 + fh - 78);
+    ctx.moveTo(30, y0 + fh - 30);
+    ctx.lineTo(W - 30, y0 + fh - 30);
     ctx.stroke();
-    if (r() > 0.55) {
+    // bamboo pole of laundry
+    if (r() > 0.6) {
+      const ly = y0 + 52;
+      ctx.strokeStyle = "#8a6a3a";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(24, ly);
+      ctx.lineTo(W - 24, ly);
+      ctx.stroke();
+      const cols = ["#e8dcc0", "#c8453a", "#3f6f8f", "#e0b04a", "#7a9a86"];
+      for (let i = 0; i < 5; i++) {
+        ctx.fillStyle = cols[Math.floor(r() * cols.length)];
+        const lx = 40 + i * 88 + r() * 20;
+        ctx.fillRect(lx, ly + 3, 26 + r() * 20, 34 + r() * 30);
+      }
+    }
+    if (r() > 0.6) {
       ctx.fillStyle = "#d9d6cc";
       ctx.fillRect(W - 140 + r() * 20, y0 + 60, 90, 54);
       ctx.fillStyle = "#9c988e";
       ctx.fillRect(W - 130 + r() * 20, y0 + 70, 70, 6);
     }
   }
+  // flaking plaster that shows the brick beneath
+  for (let i = 0; i < 5; i++) {
+    const px = r() * (W - 90);
+    const py = 40 + r() * (floors * fh - 120);
+    const pw = 36 + r() * 60;
+    const ph = 26 + r() * 54;
+    ctx.fillStyle = "#a35d45";
+    ctx.beginPath();
+    ctx.moveTo(px, py + ph * 0.4);
+    ctx.lineTo(px + pw * 0.3, py);
+    ctx.lineTo(px + pw * 0.9, py + ph * 0.2);
+    ctx.lineTo(px + pw, py + ph * 0.8);
+    ctx.lineTo(px + pw * 0.4, py + ph);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "rgba(60,25,15,0.45)";
+    ctx.lineWidth = 1.5;
+    for (let yy = py + 8; yy < py + ph; yy += 9) {
+      ctx.beginPath();
+      ctx.moveTo(px + pw * 0.1, yy);
+      ctx.lineTo(px + pw * 0.9, yy);
+      ctx.stroke();
+    }
+  }
+  // the cornice and parapet at the roofline, with a row of dentils
+  ctx.fillStyle = trim;
+  ctx.fillRect(0, 0, W, 22);
+  ctx.fillStyle = "rgba(0,0,0,0.25)";
+  for (let x = 6; x < W; x += 18) ctx.fillRect(x, 14, 8, 8);
+  // mould creeping up from the street
+  const mg = ctx.createLinearGradient(0, floors * fh - 90, 0, floors * fh + 10);
+  mg.addColorStop(0, "rgba(40,60,30,0)");
+  mg.addColorStop(1, "rgba(40,60,30,0.35)");
+  ctx.fillStyle = mg;
+  ctx.fillRect(0, floors * fh - 90, W, 100);
   const gy = floors * fh + 10;
   ctx.fillStyle = "#8a6c4c";
   ctx.fillRect(0, gy, W, H - gy);
@@ -768,4 +871,339 @@ export const seawolfLogoTexture = () => {
   };
   img.src = `${import.meta.env.BASE_URL}seawolves-logo.svg`;
   return tex;
+};
+
+/** The folded Alley Times as it lies on the table: masthead and the first columns, with a crease across the middle */
+export const foldedPaperTexture = () => {
+  const W = 512;
+  const H = 360;
+  const { canvas, ctx } = make(W, H);
+  const r = rng(11);
+  ctx.fillStyle = "#e8d9ae";
+  ctx.fillRect(0, 0, W, H);
+  for (let i = 0; i < 160; i++) {
+    ctx.fillStyle = `rgba(90,60,20,${0.02 + r() * 0.05})`;
+    ctx.fillRect(r() * W, r() * H, 2 + r() * 30, 1 + r() * 16);
+  }
+  ctx.fillStyle = "#2a2118";
+  ctx.fillRect(22, 24, W - 44, 4);
+  ctx.fillRect(22, 92, W - 44, 4);
+  ctx.textAlign = "center";
+  ctx.font = "700 54px 'Oswald', sans-serif";
+  ctx.fillText("THE ALLEY TIMES", W / 2, 80);
+  ctx.font = "600 15px 'Be Vietnam Pro', sans-serif";
+  ctx.fillText("★ EXPERIENCE NEWS ★  ·  BÁO HẺM  ·  PRICE: ONE COFFEE", W / 2, 118);
+  const colW = (W - 44 - 24) / 3;
+  for (let c = 0; c < 3; c++) {
+    const x = 22 + c * (colW + 12);
+    ctx.fillStyle = "#2a2118";
+    ctx.fillRect(x, 140, colW * (0.55 + r() * 0.4), 14);
+    for (let y = 168; y < H - 20; y += 11) {
+      ctx.fillStyle = `rgba(42,33,24,${0.5 + r() * 0.3})`;
+      ctx.fillRect(x, y, colW * (0.7 + r() * 0.3), 3);
+    }
+  }
+  ctx.fillStyle = "rgba(42,33,24,0.14)";
+  ctx.fillRect(0, H - 6, W, 6);
+  return finish(canvas);
+};
+
+export type CoverArt = "robot" | "lens" | "loop" | "scales" | "quill";
+
+/** A book cover, face-out on the shelf: flat colour, a bold line drawing, title and subtitle */
+export const bookCoverTexture = (art: CoverArt, title: string, subtitle: string, bg: string, fg: string) => {
+  const W = 600;
+  const H = 800;
+  const { canvas, ctx } = make(W, H);
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = fg;
+  ctx.lineWidth = 6;
+  ctx.strokeRect(28, 28, W - 56, H - 56);
+  ctx.lineWidth = 2;
+  ctx.strokeRect(40, 40, W - 80, H - 80);
+  ctx.fillStyle = fg;
+  ctx.strokeStyle = fg;
+  ctx.lineWidth = 12;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.save();
+  ctx.translate(W / 2, 270);
+  if (art === "robot") {
+    ctx.strokeRect(-95, -70, 190, 150);
+    ctx.beginPath();
+    ctx.moveTo(0, -70);
+    ctx.lineTo(0, -120);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(0, -128, 10, 0, Math.PI * 2);
+    ctx.fill();
+    [-42, 42].forEach((x) => {
+      ctx.beginPath();
+      ctx.arc(x, -10, 17, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.beginPath();
+    ctx.arc(0, 28, 36, 0.2, Math.PI - 0.2);
+    ctx.stroke();
+    ctx.strokeRect(-60, 100, 120, 40);
+  } else if (art === "lens") {
+    ctx.beginPath();
+    ctx.arc(-10, -10, 100, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.lineWidth = 22;
+    ctx.beginPath();
+    ctx.moveTo(62, 62);
+    ctx.lineTo(125, 125);
+    ctx.stroke();
+    ctx.lineWidth = 7;
+    const nodes: [number, number][] = [[-60, -30], [-10, -65], [40, -25], [-30, 25], [25, 35]];
+    [[0, 1], [1, 2], [0, 3], [3, 4], [2, 4], [1, 3]].forEach(([a, b]) => {
+      ctx.beginPath();
+      ctx.moveTo(nodes[a][0], nodes[a][1]);
+      ctx.lineTo(nodes[b][0], nodes[b][1]);
+      ctx.stroke();
+    });
+    nodes.forEach(([x, y]) => {
+      ctx.beginPath();
+      ctx.arc(x, y, 11, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  } else if (art === "loop") {
+    [0, Math.PI].forEach((a0) => {
+      ctx.beginPath();
+      ctx.arc(0, 0, 95, a0 + 0.35, a0 + Math.PI - 0.35);
+      ctx.stroke();
+      const a = a0 + Math.PI - 0.35;
+      const [nx, ny] = [Math.cos(a), Math.sin(a)];
+      const [x, y] = [nx * 95, ny * 95];
+      ctx.beginPath();
+      ctx.moveTo(x - ny * 36, y + nx * 36);
+      ctx.lineTo(x + nx * 28, y + ny * 28);
+      ctx.lineTo(x - nx * 28, y - ny * 28);
+      ctx.fill();
+    });
+    ctx.beginPath();
+    ctx.arc(0, 0, 24, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (art === "scales") {
+    ctx.beginPath();
+    ctx.moveTo(0, -110);
+    ctx.lineTo(0, 130);
+    ctx.moveTo(-60, 135);
+    ctx.lineTo(60, 135);
+    ctx.moveTo(-120, -80);
+    ctx.lineTo(120, -80);
+    ctx.stroke();
+    ctx.lineWidth = 6;
+    [-120, 120].forEach((x) => {
+      ctx.beginPath();
+      ctx.moveTo(x, -80);
+      ctx.lineTo(x - 50, 20);
+      ctx.moveTo(x, -80);
+      ctx.lineTo(x + 50, 20);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x, 20, 50, 0, Math.PI);
+      ctx.fill();
+    });
+  } else {
+    ctx.beginPath();
+    ctx.moveTo(-90, 110);
+    ctx.quadraticCurveTo(-20, 40, 90, -120);
+    ctx.quadraticCurveTo(70, 20, -20, 100);
+    ctx.closePath();
+    ctx.fill();
+    ctx.lineWidth = 8;
+    ctx.beginPath();
+    ctx.moveTo(-110, 135);
+    ctx.lineTo(10, 135);
+    ctx.stroke();
+  }
+  ctx.restore();
+  ctx.textAlign = "center";
+  let size = 74;
+  const family = "'Oswald', sans-serif";
+  ctx.font = `700 ${size}px ${family}`;
+  while (ctx.measureText(title.toUpperCase()).width > W - 130 && size > 30) {
+    size -= 2;
+    ctx.font = `700 ${size}px ${family}`;
+  }
+  const words = title.toUpperCase().split(" ");
+  const lines: string[] = [];
+  if (ctx.measureText(words.join(" ")).width <= W - 130 && words.length < 3) lines.push(words.join(" "));
+  else {
+    const mid = Math.ceil(words.length / 2);
+    lines.push(words.slice(0, mid).join(" "), words.slice(mid).join(" "));
+  }
+  ctx.font = `700 ${Math.min(size, 66)}px ${family}`;
+  lines.forEach((l, i) => ctx.fillText(l, W / 2, 520 + i * 70));
+  ctx.font = "500 24px 'Be Vietnam Pro', sans-serif";
+  const sub = subtitle.split(" ");
+  const sl: string[] = [""];
+  sub.forEach((w) => {
+    const cur = sl[sl.length - 1];
+    if (ctx.measureText(`${cur} ${w}`).width > W - 150 && cur) sl.push(w);
+    else sl[sl.length - 1] = cur ? `${cur} ${w}` : w;
+  });
+  sl.forEach((l, i) => ctx.fillText(l, W / 2, 520 + lines.length * 70 + 8 + i * 32));
+  return finish(canvas);
+};
+
+/** A round "COMING SOON" stamp for the blog's cover */
+export const comingSoonTexture = () => {
+  const { canvas, ctx } = make(256, 128);
+  ctx.translate(128, 64);
+  ctx.rotate(-0.2);
+  ctx.strokeStyle = "#d8342b";
+  ctx.fillStyle = "#d8342b";
+  ctx.lineWidth = 6;
+  ctx.strokeRect(-110, -40, 220, 80);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "700 44px 'Oswald', sans-serif";
+  ctx.fillText("COMING SOON", 0, 2);
+  return finish(canvas);
+};
+
+/** The laptop's keyboard deck: rows of dark keys and a trackpad on brushed aluminium */
+export const laptopKeysTexture = () => {
+  const W = 680;
+  const H = 460;
+  const { canvas, ctx } = make(W, H);
+  ctx.fillStyle = "#c5c8ce";
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = "#1c1d22";
+  const rows = [14, 14, 14, 13, 12];
+  rows.forEach((n, r) => {
+    const kw = (W - 60) / 14;
+    const x0 = 30 + (14 - n) * kw * 0.5;
+    for (let i = 0; i < n; i++) ctx.fillRect(x0 + i * kw + 2, 30 + r * 50, kw - 4, 42);
+  });
+  ctx.fillRect(30 + 3 * ((W - 60) / 14), 30 + 5 * 50, 6.5 * ((W - 60) / 14), 42);
+  ctx.fillStyle = "#b3b6bd";
+  ctx.fillRect(W / 2 - 110, 312, 220, 120);
+  ctx.strokeStyle = "#9a9da4";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(W / 2 - 110, 312, 220, 120);
+  return finish(canvas);
+};
+
+/** What the laptop shows while you are at the desk: a soft wallpaper with a menu bar and a dock */
+export const laptopScreenTexture = () => {
+  const W = 640;
+  const H = 420;
+  const { canvas, ctx } = make(W, H);
+  const g = ctx.createLinearGradient(0, 0, W, H);
+  g.addColorStop(0, "#1b4b9b");
+  g.addColorStop(0.55, "#8a3f6a");
+  g.addColorStop(1, "#f4b73f");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = "rgba(255,255,255,0.85)";
+  ctx.fillRect(0, 0, W, 18);
+  ctx.fillStyle = "rgba(20,17,26,0.7)";
+  ctx.fillRect(14, 6, 40, 6);
+  ctx.fillRect(66, 6, 30, 6);
+  ctx.fillRect(W - 70, 6, 56, 6);
+  ctx.fillStyle = "rgba(255,255,255,0.9)";
+  ctx.fillRect(70, 70, 300, 190);
+  ctx.fillStyle = "#e4e6ea";
+  ctx.fillRect(70, 70, 300, 22);
+  ctx.fillStyle = "#14111a";
+  for (let y = 108; y < 250; y += 18) ctx.fillRect(86, y, 150 + ((y * 7) % 90), 5);
+  ctx.fillStyle = "rgba(255,255,255,0.35)";
+  ctx.fillRect(W / 2 - 110, H - 46, 220, 34);
+  ["#d8342b", "#f4b73f", "#2c8c7e", "#1b4b9b", "#8a3f6a"].forEach((c, i) => {
+    ctx.fillStyle = c;
+    ctx.fillRect(W / 2 - 98 + i * 42, H - 41, 24, 24);
+  });
+  return finish(canvas);
+};
+
+/** Cloth speaker grille of a 1960s radio: gold and cream threads with a dark weave */
+export const radioGrilleTexture = () => {
+  const { canvas, ctx } = make(240, 170);
+  ctx.fillStyle = "#c9a45a";
+  ctx.fillRect(0, 0, 240, 170);
+  for (let x = 0; x < 240; x += 6) {
+    ctx.fillStyle = x % 12 ? "rgba(255,240,200,0.5)" : "rgba(60,35,15,0.35)";
+    ctx.fillRect(x, 0, 3, 170);
+  }
+  for (let y = 0; y < 170; y += 6) {
+    ctx.fillStyle = "rgba(60,35,15,0.18)";
+    ctx.fillRect(0, y, 240, 2);
+  }
+  return finish(canvas);
+};
+
+/** The tuning dial: station names and kilohertz marks on a cream scale with a red needle */
+export const radioDialTexture = () => {
+  const { canvas, ctx } = make(260, 340);
+  ctx.fillStyle = "#f3e2b0";
+  ctx.fillRect(0, 0, 260, 340);
+  ctx.fillStyle = "#2a2118";
+  ctx.textAlign = "center";
+  ctx.font = "700 30px 'Oswald', sans-serif";
+  ctx.fillText("SÀI GÒN", 130, 56);
+  ctx.font = "500 18px 'Be Vietnam Pro', sans-serif";
+  ctx.fillText("PHÁT THANH", 130, 82);
+  ctx.strokeStyle = "#2a2118";
+  ctx.lineWidth = 2;
+  for (let i = 0; i <= 20; i++) {
+    const x = 24 + i * 10.8;
+    ctx.beginPath();
+    ctx.moveTo(x, 150);
+    ctx.lineTo(x, i % 5 === 0 ? 200 : 180);
+    ctx.stroke();
+  }
+  ctx.font = "600 17px 'Be Vietnam Pro', sans-serif";
+  ["55", "80", "100", "130", "160"].forEach((t, i) => ctx.fillText(t, 24 + i * 54, 226));
+  ctx.strokeStyle = "#d8342b";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(98, 136);
+  ctx.lineTo(98, 214);
+  ctx.stroke();
+  ctx.fillStyle = "#8a3f2a";
+  ctx.font = "600 15px 'Be Vietnam Pro', sans-serif";
+  ctx.fillText("AM · kHz", 130, 282);
+  return finish(canvas);
+};
+
+export const musicNoteTexture = () => {
+  const { canvas, ctx } = make(64, 64);
+  ctx.fillStyle = "#ffd9a0";
+  ctx.font = "700 52px 'Be Vietnam Pro', sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("♪", 32, 50);
+  return finish(canvas);
+};
+
+/** The flag of Vietnam: a gold five-pointed star on red, with a faint cloth weave */
+export const flagTexture = () => {
+  const W = 300;
+  const H = 200;
+  const { canvas, ctx } = make(W, H);
+  ctx.fillStyle = "#da251d";
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = "#ffff00";
+  ctx.beginPath();
+  const cx = W / 2;
+  const cy = H / 2;
+  const R = H * 0.3;
+  for (let i = 0; i < 10; i++) {
+    const a = -Math.PI / 2 + (i * Math.PI) / 5;
+    const rad = i % 2 ? R * 0.382 : R;
+    const x = cx + Math.cos(a) * rad;
+    const y = cy + Math.sin(a) * rad;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = "rgba(0,0,0,0.05)";
+  for (let x = 0; x < W; x += 4) ctx.fillRect(x, 0, 1, H);
+  for (let y = 0; y < H; y += 4) ctx.fillRect(0, y, W, 1);
+  return finish(canvas);
 };

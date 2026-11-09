@@ -8,6 +8,41 @@ export interface ExperienceCategory {
   items: ExperienceDetail[];
 }
 
+export interface ExperienceStat {
+  value: string;
+  label: string;
+}
+
+/** `label` is YYYY-MM */
+export interface CommitMonth {
+  label: string;
+  count: number;
+}
+
+/** Commits to humanlab/WTC-LibraryOfCongress by month, counted from the GitHub API on 9 Nov 2026 */
+export const wtcCommitsByMonth: CommitMonth[] = [
+  { label: "2025-04", count: 1 },
+  { label: "2025-05", count: 0 },
+  { label: "2025-06", count: 0 },
+  { label: "2025-07", count: 0 },
+  { label: "2025-08", count: 0 },
+  { label: "2025-09", count: 0 },
+  { label: "2025-10", count: 3 },
+  { label: "2025-11", count: 3 },
+  { label: "2025-12", count: 33 },
+  { label: "2026-01", count: 4 },
+  { label: "2026-02", count: 7 },
+  { label: "2026-03", count: 25 },
+  { label: "2026-04", count: 15 },
+  { label: "2026-05", count: 31 },
+  { label: "2026-06", count: 0 },
+  { label: "2026-07", count: 0 },
+  { label: "2026-08", count: 6 },
+  { label: "2026-09", count: 41 },
+  { label: "2026-10", count: 20 },
+  { label: "2026-11", count: 28 },
+];
+
 export interface Experience {
   title: string;
   company: string;
@@ -19,6 +54,14 @@ export interface Experience {
   /** either a flat list of bullets or a list of expandable categories */
   highlights: string[] | ExperienceCategory[];
   logo: string;
+  /** printed under the logo, like a photo caption */
+  /** a square mark for the small logo slot in View mode; defaults to `logo` */
+  logoMark?: string;
+  logoCaption?: string;
+  /** a boxed run of figures shown under the headline */
+  stats?: ExperienceStat[];
+  /** graphics printed under the stats */
+  figures?: ("pipeline" | "commits")[];
 }
 
 export const isCategorised = (h: Experience["highlights"]): h is ExperienceCategory[] => typeof h[0] === "object";
@@ -30,12 +73,13 @@ export const experiences: Experience[] = [
     location: "Stony Brook, NY",
     period: "April 2025 - Present",
     description:
-      "Led a team to ship a searchable oral history archive of 9/11 first responders' interviews.",
+      "Led the team building a searchable archive for the Remembering 9/11 Oral History Project: 490 first-responder interviews, from a search box on the web to a touch-screen kiosk in a museum.",
     tldr: [
-      "Architected full-stack system: FastAPI backend, React frontend, hybrid semantic search (PostgreSQL FTS + pgvector), AWS infrastructure (S3, EC2, MediaConvert)",
-      "Built end-to-end ML pipeline: 20,000+ GB data migration, WhisperX transcription, LLM-powered chapters for 400+ videos",
-      "Implemented CI/CD with GitHub Actions: 80%+ test coverage, automated deployments (90% faster), security scanning",
-      "Delivered system achieving sub-second search across 800+ hours of content with 10+ production smoke tests"
+      "Architected the full stack: FastAPI backend, React frontend, hybrid semantic search (PostgreSQL full-text + pgvector) and AWS infrastructure (S3, EC2, CloudWatch)",
+      "Built the ML pipeline behind the archive: WhisperX transcription with word-level timing, LLM-generated chapters, and a transcript rebuild that was rolled back, diagnosed and replanned when it broke syncing",
+      "Shipped CI/CD with GitHub Actions: automated staging deploys, smoke tests, security scans, and an access-controlled test site on EC2 behind Cloudflare",
+      "Led the 2026 redesign: accessible, responsive, touch and museum-kiosk ready, with saved interviews, vignettes, in-video subtitles and a guided help tour",
+      "Runs in production with Redis caching, request tracing, rate limiting and CloudWatch alarms"
     ],
     highlights: [
       {
@@ -77,7 +121,11 @@ export const experiences: Experience[] = [
             points: [
               "Built end-to-end automation on EC2: PDF transcript extraction → WhisperX transcription → custom alignment algorithms → word-level timestamps for 100+ videos",
               "Integrated LLM-based chapter generation system to automatically segment videos into contextual sections",
-              "Created embedding generation pipeline for semantic search indexing"
+              "Created embedding generation pipeline for semantic search indexing",
+              "Rebuilt the transcript set with WhisperX (May 2026) and loaded 490+ transcripts with word-level timing into PostgreSQL",
+              "Pre-generated and regenerated high-resolution video thumbnails to cut page load time",
+              "Investigated a failed transcript rebuild (the PDF parser merged speaker turns, so words drifted out of sync and interviewer names showed as speech), rolled the table back, and planned a WhisperX + CSV realignment that keeps the authoritative text with accurate timing",
+              "Built the vignette (short compilation) API: each short film links to its full interview and speaker metadata, with signed S3 access"
             ]
           }
         ]
@@ -91,7 +139,9 @@ export const experiences: Experience[] = [
               "Engineered search engine combining PostgreSQL FTS + pgvector semantic embeddings using Reciprocal Rank Fusion (RRF) algorithm",
               "Implemented chapter-level search granularity with sentence-transformers embeddings, achieving sub-second query times",
               "Built parallel async search tasks (keyword, semantic, description) with intelligent query type detection",
-              "Added domain-specific query expansion for medical terminology and 9/11 abbreviations"
+              "Added domain-specific query expansion for medical terminology and 9/11 abbreviations",
+              "Ran a systematic search-quality pass (March-April 2026): worked through 14+ ranking and performance issues, then wrote an evaluator plan to measure relevance",
+              "Built a related-interview suggestion algorithm and daily featured-video selection"
             ]
           },
           {
@@ -142,6 +192,9 @@ export const experiences: Experience[] = [
             points: [
               "Configured Docker Compose for local dev and AWS EC2 production deployment with PostgreSQL+pgvector, FastAPI, React, Node video proxy",
               "Set up nginx reverse proxy on EC2, BuildKit optimization, and multi-stage builds",
+              "Deployed the internal testing and demo environment on EC2 behind Cloudflare: custom-domain DNS, Cloudflare Access with an organisation email allowlist so only the team and stakeholders can reach it, and Cloudflare Insights analytics (with a matching CSP)",
+              "Set up Alembic database migrations and one-command team setup scripts (Linux, macOS, Windows) with AWS Secrets Manager for .env files",
+              "Added production observability: AWS CloudWatch metrics with alarms that notify through SNS, request tracing, and Redis-backed caching and rate limiting; slimmed images with CPU-only PyTorch builds"
             ]
           }
         ]
@@ -155,7 +208,8 @@ export const experiences: Experience[] = [
               "Led security audit implementing CSP headers, XSS prevention, rate limiting (slowapi), request size validation, trusted host verification",
               "Built sanitized error responses for production with Sentry integration for monitoring",
               "Configured multi-layer security middleware architecture and CORS policies",
-              "Integrated security scanning in CI blocking deployments with vulnerabilities"
+              "Integrated security scanning in CI blocking deployments with vulnerabilities",
+              "Ongoing dependency patching and CSP tuning across backend and frontend (Sept-Oct 2026)"
             ]
           }
         ]
@@ -175,7 +229,19 @@ export const experiences: Experience[] = [
               "Video.js player with synchronized transcript viewer (auto-scroll, click-to-seek, word-level highlighting)",
               "Chapters panel with thumbnail previews, keyboard shortcuts, and jump navigation",
               "Citation generation, responsive design (Tailwind CSS v4), loading skeletons, error handling",
-              "Search result cards with metadata and excerpt highlighting"
+              "Search result cards with metadata and excerpt highlighting",
+              "WebVTT in-video subtitles with caption settings, auto-generated video outlines and chapters, and a redesigned video player (including Safari mobile fixes)",
+              "Vignette and compilation pages with transcripts, save/resume and citations; My Library with saved and recently watched interviews",
+              "Help Center with a rewritten FAQ and an interactive guided tour (driver.js) that spotlights real controls, follows the visitor across pages, and uses screenshots generated from the running site so they never go stale",
+              "Museum kiosk build: a separate build with larger type and touch targets, a QR code to continue on a phone, and an idle timer that clears saved lists and returns to the home page after five minutes"
+            ]
+          },
+          {
+            subtitle: "Redesign, Accessibility & Kiosk",
+            points: [
+              "Led the 2026 redesign: shared page header, modal frame and confirm components, with filters and sort state kept in the URL",
+              "Accessibility pass: accessible dialogs for citations and transcripts, labelled inputs, enforced standards on vignettes, dedicated accessibility page",
+              "Responsive, touch and museum-kiosk layouts; loading skeletons and automatic reload after a deploy replaces page chunks"
             ]
           }
         ]
@@ -222,13 +288,22 @@ export const experiences: Experience[] = [
               "90% faster deployments via automation",
               "80%+ test coverage maintained",
               "10+ smoke tests for deployment validation",
-              "150+ commits, ~116K net lines of code"
+              "200+ commits and 40+ merged PRs (April 2025 - Nov 2026)"
             ]
           }
         ]
       }
     ],
-    logo: "/logos/suny-rf.png",
+    logo: "/logos/sbm.png",
+    logoMark: "/logos/sbm-mark.png",
+    logoCaption: "Stony Brook Medicine, home of the World Trade Center Health Program",
+    stats: [
+      { value: "490", label: "interviews online" },
+      { value: "800+", label: "hours of audio and video" },
+      { value: "41", label: "merged pull requests" },
+      { value: "217", label: "commits since April 2025" },
+    ],
+    figures: ["pipeline", "commits"],
   },
   {
     title: "Software Engineer Intern",
@@ -244,5 +319,12 @@ export const experiences: Experience[] = [
       "Established JUnit5/Mockito test suite with 90%+ coverage, cutting pre-merge defects",
     ],
     logo: "/logos/fpt.jpg",
+    logoCaption: "FPT Software, Ho Chi Minh City",
+    stats: [
+      { value: "5", label: "interns led" },
+      { value: "100%", label: "sprint commitments met" },
+      { value: "+20%", label: "team throughput" },
+      { value: "90%+", label: "test coverage" },
+    ],
   },
 ];

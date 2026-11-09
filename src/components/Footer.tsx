@@ -6,5 +6,12 @@ export const Footer = () => (
         Back to top
       </a>
     </div>
+    <p className="max-w-5xl mx-auto pt-3 text-xs text-muted-foreground">
+      Puppy bark in the alley: recording by{" "}
+      <a href="https://commons.wikimedia.org/wiki/File:Imbir_-_szczekni%C4%99cie.webm" className="link-ink" target="_blank" rel="noreferrer">
+        Julo
+      </a>
+      , CC BY-SA 4.0, via Wikimedia Commons.
+    </p>
   </footer>
 );
