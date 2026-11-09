@@ -5,8 +5,7 @@ import { Blob, Box, Glow } from "./kit";
 import { Model, usePBR } from "./gfx";
 import { AcousticGuitar, ElectricGuitar } from "./guitars";
 import { Steam, Fx } from "./parts";
-import { alleyNightTexture, hotspotTexture, landmarkPoster, rugTexture, tileTexture, wainscotTexture } from "./textures";
-import { useGLTF } from "@react-three/drei";
+import { alleyNightTexture, hotspotTexture, landmarkPoster, laptopKeysTexture, laptopScreenTexture, musicNoteTexture, radioDialTexture, radioGrilleTexture, rugTexture, tileTexture, wainscotTexture } from "./textures";
 
 /* First-person house. Room is 7 x 7 m, ceiling 3.2 m. Front wall (door) at z=+3.5, back wall at z=-3.5. */
 const W = 3.5;
@@ -44,31 +43,152 @@ const Louvre = ({ w = 0.5, h = 1.5 }: { w?: number; h?: number }) => (
   </group>
 );
 
-/** The laptop: lid closed until you open it, which the camera then follows into the screen */
-const OpenLaptop = ({ lid, pos, rot }: { lid: MutableRefObject<number>; pos: [number, number, number]; rot: number }) => {
-  const { scene } = useGLTF(`${import.meta.env.BASE_URL}assets/models/classic_laptop/classic_laptop_1k.gltf`.replace("//", "/"));
-  const obj = useMemo(() => scene.clone(true), [scene]);
-  const nodes = useMemo(() => {
-    const screen = obj.getObjectByName("classic_laptop_screen")!;
-    const stand = obj.getObjectByName("classic_laptop_stand");
-    return { screen, base: screen.position.clone(), pivot: (stand ?? screen).position.clone() };
-  }, [obj]);
-  useFrame(() => {
-    const k = (1 - lid.current) * 1.5;
-    const { screen, base, pivot } = nodes;
-    const rel = base.clone().sub(pivot).applyAxisAngle(new THREE.Vector3(1, 0, 0), k);
-    screen.position.copy(pivot).add(rel);
-    screen.rotation.set(k, 0, 0);
+/** A carbon-steel wok on an iron trivet over the burner: flat-bottomed so it sits, with a lip, a long handle and a little food */
+const Wok = () => {
+  const body = useMemo(
+    () =>
+      new THREE.LatheGeometry(
+        [[0, 0], [0.12, 0], [0.14, 0.012], [0.24, 0.115], [0.255, 0.13], [0.245, 0.13], [0.23, 0.11], [0.13, 0.03], [0, 0.026]].map(([r, y]) => new THREE.Vector2(r, y)),
+        32,
+      ),
+    [],
+  );
+  return (
+    <group position={[0, 0.935, 0]}>
+      {/* trivet: three iron feet between the stove top and the wok */}
+      <mesh position={[0, -0.007, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.12, 0.008, 6, 24]} />
+        <meshStandardMaterial color="#14111a" metalness={0.6} roughness={0.5} />
+      </mesh>
+      <mesh geometry={body}>
+        <meshStandardMaterial color="#4a4a54" metalness={0.7} roughness={0.35} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh position={[0, 0.134, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.25, 0.007, 6, 32]} />
+        <meshStandardMaterial color="#c7c7d1" metalness={0.8} roughness={0.3} />
+      </mesh>
+      {/* a riveted steel tab on the rim, a metal shank, then the wooden grip, all sloping gently up and out */}
+      <mesh position={[0.235, 0.12, 0]} rotation={[0, 0, -0.5]}>
+        <boxGeometry args={[0.09, 0.014, 0.05]} />
+        <meshStandardMaterial color="#4a4a54" metalness={0.7} roughness={0.35} />
+      </mesh>
+      <mesh position={[0.31, 0.138, 0]} rotation={[0, 0, 0.12 - Math.PI / 2]}>
+        <cylinderGeometry args={[0.011, 0.011, 0.1, 8]} />
+        <meshStandardMaterial color="#c7c7d1" metalness={0.8} roughness={0.3} />
+      </mesh>
+      <mesh position={[0.43, 0.152, 0]} rotation={[0, 0, 0.12 - Math.PI / 2]}>
+        <cylinderGeometry args={[0.016, 0.014, 0.17, 8]} />
+        <meshStandardMaterial color="#6a3f22" roughness={0.7} />
+      </mesh>
+      {/* stir-fry: a low mound of greens and carrot that sits inside the wall of the pan */}
+      <mesh position={[0, 0.034, 0]} scale={[1, 0.38, 1]}>
+        <sphereGeometry args={[0.115, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <meshStandardMaterial color="#3f7a58" roughness={0.8} />
+      </mesh>
+      {[[0.04, 0.02, "#e07b39"], [-0.05, 0.05, "#e07b39"], [0.0, -0.06, "#e8dcc0"], [-0.06, -0.03, "#7aa84a"], [0.07, -0.04, "#7aa84a"]].map(([x, z, c], i) => {
+        const r = Math.hypot(x as number, z as number);
+        return (
+          <mesh key={i} position={[x as number, 0.034 + 0.044 * Math.sqrt(Math.max(0, 1 - (r / 0.115) ** 2)) - 0.004, z as number]} scale={[1, 0.6, 1.3]}>
+            <sphereGeometry args={[0.02, 8, 6]} />
+            <meshStandardMaterial color={c as string} roughness={0.7} />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+};
+
+/** A 1960s Saigon tabletop radio: walnut case, cloth grille, a lit tuning dial and two knobs. Glows amber when it is playing. */
+const Radio = ({ on }: { on: boolean }) => {
+  const grille = useMemo(() => radioGrilleTexture(), []);
+  const dial = useMemo(() => radioDialTexture(), []);
+  const note = useMemo(() => musicNoteTexture(), []);
+  const notes = useRef<(THREE.Sprite | null)[]>([]);
+  useFrame((s) => {
+    notes.current.forEach((n, i) => {
+      if (!n) return;
+      const t = (s.clock.elapsedTime * 0.3 + i / 3) % 1;
+      n.position.set(0.05 + Math.sin(t * 6 + i) * 0.06, 0.3 + t * 0.55, 0.15);
+      (n.material as THREE.SpriteMaterial).opacity = Math.sin(t * Math.PI) * 0.9;
+    });
   });
   return (
-    <group position={pos} rotation={[0, rot, 0]} scale={0.8}>
-      <primitive object={obj} />
+    <group>
+      {[[-0.18, -0.05], [0.18, -0.05], [-0.18, 0.05], [0.18, 0.05]].map(([x, z], i) => (
+        <Box key={i} p={[x, 0.008, z]} s={[0.03, 0.016, 0.03]} c="#14111a" />
+      ))}
+      <Box p={[0, 0.136, 0]} s={[0.42, 0.24, 0.16]} c="#7a4a28" r={0.5} />
+      <Box p={[0, 0.262, 0]} s={[0.43, 0.012, 0.17]} c="#e8dcc0" r={0.5} />
+      <mesh position={[-0.08, 0.14, 0.0805]}>
+        <planeGeometry args={[0.22, 0.17]} />
+        <meshBasicMaterial map={grille} color={on ? "#ffffff" : "#a89880"} toneMapped={false} />
+      </mesh>
+      <mesh position={[0.125, 0.165, 0.0805]}>
+        <planeGeometry args={[0.13, 0.17]} />
+        <meshBasicMaterial map={dial} color={on ? "#ffd9a0" : "#6f6552"} toneMapped={false} />
+      </mesh>
+      {[0.1, 0.15].map((x) => (
+        <mesh key={x} position={[x, 0.07, 0.09]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.014, 0.016, 0.02, 14]} />
+          <meshStandardMaterial color="#e8dcc0" roughness={0.4} />
+        </mesh>
+      ))}
+      {on && <Glow p={[0.125, 0.165, 0.12]} s={0.4} color="255,170,80" o={0.9} />}
+      {on &&
+        [0, 1, 2].map((i) => (
+          <sprite key={i} ref={(n) => (notes.current[i] = n)} scale={[0.12, 0.12, 1]}>
+            <spriteMaterial map={note} transparent depthWrite={false} toneMapped={false} />
+          </sprite>
+        ))}
+    </group>
+  );
+};
+
+/** A modern laptop: aluminium base with a keyboard and trackpad, and a lid that swings open on its hinge */
+const OpenLaptop = ({ lid, pos, rot }: { lid: MutableRefObject<number>; pos: [number, number, number]; rot: number }) => {
+  const keys = useMemo(() => laptopKeysTexture(), []);
+  const screen = useMemo(() => laptopScreenTexture(), []);
+  const hinge = useRef<THREE.Group>(null);
+  const LW = 0.34;
+  const LD = 0.23;
+  useFrame(() => {
+    if (hinge.current) hinge.current.rotation.x = -lid.current * 1.85; // 0 = shut flat, 1 = open past vertical
+  });
+  return (
+    <group position={pos} rotation={[0, rot, 0]} scale={1.25}>
+      <Box p={[0, 0.007, 0]} s={[LW, 0.014, LD]} c="#c5c8ce" r={0.35} m={0.8} />
+      <mesh position={[0, 0.0145, 0.005]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[LW - 0.02, LD - 0.025]} />
+        <meshStandardMaterial map={keys} roughness={0.5} />
+      </mesh>
+      {[-1, 1].map((sx) => (
+        <Box key={sx} p={[sx * (LW / 2 - 0.02), -0.002, LD / 2 - 0.02]} s={[0.03, 0.004, 0.02]} c="#14111a" />
+      ))}
+      {[-1, 1].map((sx) => (
+        <Box key={`b${sx}`} p={[sx * (LW / 2 - 0.02), -0.002, -LD / 2 + 0.02]} s={[0.03, 0.004, 0.02]} c="#14111a" />
+      ))}
+      {/* the lid turns about the back edge of the base */}
+      <group ref={hinge} position={[0, 0.014, -LD / 2]}>
+        <mesh rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.006, 0.006, LW * 0.7, 10]} />
+          <meshStandardMaterial color="#9a9da4" metalness={0.8} roughness={0.4} />
+        </mesh>
+        <Box p={[0, 0.006, LD / 2]} s={[LW, 0.01, LD]} c="#c5c8ce" r={0.35} m={0.8} />
+        <mesh position={[0, 0.0115, LD / 2]} rotation={[-Math.PI / 2, 0, 0]}>
+          <circleGeometry args={[0.022, 20]} />
+          <meshBasicMaterial color="#f1efe8" toneMapped={false} />
+        </mesh>
+        <mesh position={[0, 0.0005, LD / 2]} rotation={[Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[LW - 0.02, LD - 0.02]} />
+          <meshBasicMaterial map={screen} toneMapped={false} />
+        </mesh>
+      </group>
     </group>
   );
 };
 
 /** A pulsing marker over something you can use */
-const Hotspot = ({ p, id, hover, hide }: { p: [number, number, number]; id: string; hover: MutableRefObject<string | null>; hide: boolean }) => {
+export const Hotspot = ({ p, id, hover, hide }: { p: [number, number, number]; id: string; hover: MutableRefObject<string | null>; hide: boolean }) => {
   const tex = useMemo(() => hotspotTexture(), []);
   const ref = useRef<THREE.Sprite>(null);
   useFrame((s) => {
@@ -97,8 +217,10 @@ export const HomeRoom = ({
   onPick,
   catPos,
   focus,
+  radio,
 }: {
   focus: "laptop" | "kitchen" | null;
+  radio: boolean;
   fx: MutableRefObject<Fx>;
   input: MutableRefObject<{ x: number; z: number }>;
   turn: MutableRefObject<number>;
@@ -381,16 +503,16 @@ export const HomeRoom = ({
           <Model name="ceiling_fan" w={1.35} cast={false} />
         </group>
       </group>
-      <group position={[-1.5, H - 0.7, -0.6]}>
-        <mesh>
+      <group position={[-1.5, H, -0.6]}>
+        <mesh position={[0, -0.35, 0]}>
           <cylinderGeometry args={[0.004, 0.004, 0.7, 4]} />
           <meshBasicMaterial color="#14111a" />
         </mesh>
-        <mesh position={[0, -0.4, 0]}>
+        <mesh position={[0, -0.74, 0]}>
           <sphereGeometry args={[0.07, 12, 10]} />
           <meshBasicMaterial color="#fff1c8" toneMapped={false} />
         </mesh>
-        <Glow p={[0, -0.4, 0]} s={0.7} o={0.5} />
+        <Glow p={[0, -0.74, 0]} s={0.7} o={0.5} />
       </group>
 
       {/* back wall: sideboard with the framed portrait */}
@@ -404,9 +526,9 @@ export const HomeRoom = ({
           "shelf",
           <group position={[-2.7, 0, -W + 0.3]}>
             <Model name="wooden_bookshelf_worn" h={2.25} />
-            {[0.3, 0.71, 1.12, 1.53, 1.94].map((y, r) =>
+            {[0.36, 0.72, 1.05, 1.38, 1.81].map((y, r) =>
               Array.from({ length: 9 }, (_, i) => {
-                const hgt = 0.26 + ((i * 7 + r * 3) % 5) * 0.035;
+                const hgt = Math.min(0.26 + ((i * 7 + r * 3) % 5) * 0.035, [0.3, 0.28, 0.28, 0.37, 0.4][r]);
                 const wd = 0.07 + ((i * 3 + r) % 4) * 0.02;
                 return (
                   <mesh key={`${r}${i}`} position={[-0.58 + i * 0.145 + (r % 2) * 0.02, y + hgt / 2, 0.0]}>
@@ -423,10 +545,10 @@ export const HomeRoom = ({
           <group position={[2.65, 0, -2.95]}>
             <Model name="painted_wooden_table" h={0.76} />
             <Suspense fallback={null}>
-              <OpenLaptop lid={lid} pos={[-0.03, 0.76, 0.05]} rot={0.0} />
+              <OpenLaptop lid={lid} pos={[-0.03, 0.764, 0.05]} rot={0.0} />
             </Suspense>
-            <Model name="desk_lamp_arm_01" h={0.62} pos={[-0.62, 0.76, -0.22]} rot={[0, 0.7, 0]} />
-            <Model name="painted_wooden_chair_01" h={0.95} pos={[0.1, 0, 0.85]} rot={[0, Math.PI, 0]} />
+            <Model name="desk_lamp_arm_01" h={0.62} pos={[-0.62, 0.76, -0.22]} rot={[0, -2.14, 0]} />
+            <Model name="painted_wooden_chair_01" h={0.95} pos={[0.1, 0, 0.95]} rot={[0, Math.PI, 0]} />
           </group>,
         )}
         {pick(
@@ -437,32 +559,33 @@ export const HomeRoom = ({
             <Box p={[0, 0.45, 0.95]} s={[0.7, 0.9, 0.8]} c="#2f6a49" r={0.55} />
             <Box p={[0, 0.92, 0.95]} s={[0.76, 0.05, 0.86]} c="#e8dcc0" r={0.4} />
             <Model name="electric_stove" h={0.92} rot={[0, Math.PI / 2, 0]} />
-            <mesh position={[0, 1.0, 0.0]} scale={[1, 0.4, 1]}>
-              <sphereGeometry args={[0.24, 20, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2]} />
-              <meshStandardMaterial color="#26262c" metalness={0.8} roughness={0.35} side={THREE.DoubleSide} />
-            </mesh>
+            <Wok />
             <Steam pos={[0, 1.1, 0]} />
             {focus === "kitchen" && <Steam pos={[0.02, 1.08, 0.04]} />}
             <pointLight ref={flame} position={[0.05, 0.95, 0]} intensity={0} distance={3} color="#ff8a3a" />
             <Box p={[-0.2, 1.7, 0]} s={[0.3, 0.04, 1.6]} c="#6a3f22" r={0.5} />
+            {[-0.6, 0.6].map((z) => (
+              <Box key={z} p={[-0.3, 1.65, z]} s={[0.2, 0.06, 0.04]} c="#3a2616" r={0.5} />
+            ))}
             <Model name="brass_pot_01" h={0.3} pos={[-0.2, 1.72, -0.5]} />
             <Model name="pot_enamel_01" w={0.28} pos={[-0.2, 1.72, 0.1]} />
             <Model name="brass_pan_01" w={0.4} pos={[-0.2, 1.72, 0.6]} rot={[0, 1.2, 0]} />
             <Model name="ceramic_vase_01" h={0.4} pos={[0.2, 0.94, -0.95]} />
           </group>,
         )}
+        <group position={[W - 0.12, 0.55, 1.35]} rotation={[0, -Math.PI / 2, 0]}>
+          <Box p={[0, 1.05, -0.02]} s={[0.1, 0.04, 0.05]} c="#3a2616" />
+          <AcousticGuitar shake={strum} />
+        </group>
+        <group position={[W - 0.1, 0.95, 0.3]} rotation={[0, -Math.PI / 2, 0]}>
+          <Box p={[0, 1.1, -0.02]} s={[0.1, 0.04, 0.05]} c="#3a2616" />
+          <ElectricGuitar shake={riff} />
+        </group>
+        {/* the radio on the side table under the guitars: click it to put a Saigon bolero on */}
         {pick(
-          "guitar",
-          <group position={[W - 0.12, 0.55, 1.35]} rotation={[0, -Math.PI / 2, 0]}>
-            <Box p={[0, 1.05, -0.02]} s={[0.1, 0.04, 0.05]} c="#3a2616" />
-            <AcousticGuitar shake={strum} />
-          </group>,
-        )}
-        {pick(
-          "electric",
-          <group position={[W - 0.1, 0.62, 0.3]} rotation={[0, -Math.PI / 2, 0]}>
-            <Box p={[0, 1.1, -0.02]} s={[0.1, 0.04, 0.05]} c="#3a2616" />
-            <ElectricGuitar shake={riff} />
+          "radio",
+          <group position={[W - 0.4, 0.55, 0.3]} rotation={[0, -Math.PI / 2, 0]}>
+            <Radio on={radio} />
           </group>,
         )}
         {pick(
@@ -476,8 +599,9 @@ export const HomeRoom = ({
       {([
         ["laptop", [2.62, 1.12, -2.95]],
         ["kitchen", [-2.85, 1.3, -0.8]],
+        ["radio", [W - 0.45, 0.95, 0.3]],
       ] as [string, [number, number, number]][]).map(([id, p]) => (
-        <Hotspot key={id} id={id} p={p} hover={hoverId} hide={!!focus || paused} />
+        <Hotspot key={id} id={id} p={p} hover={hoverId} hide={!!focus || paused || (id === "radio" && radio)} />
       ))}
 
       {/* sofa, tea table, armchair, rug, amp and radio: the living corner */}
@@ -489,8 +613,7 @@ export const HomeRoom = ({
       <Model name="chinese_tea_table" w={0.9} pos={[-1.5, 0, 1.7]} />
       <Model name="tea_set_01" w={0.3} pos={[-1.5, 0.5, 1.7]} rot={[0, 0.6, 0]} />
       <Model name="side_table_01" w={0.55} pos={[W - 0.4, 0, 0.3 + 0.0]} />
-      <Model name="portable_cassette_player" w={0.2} pos={[W - 0.4, 0.55, 0.2]} rot={[0, -1.2, 0]} />
-      <Model name="vintage_radio_transceiver" w={0.4} pos={[W - 0.4, 0.55, 0.45]} rot={[0, -1.7, 0]} />
+      <Model name="portable_cassette_player" w={0.2} pos={[W - 0.35, 0.6, 2.2]} rot={[0, -1.2, 0]} />
       <Box p={[W - 0.35, 0.3, 2.2]} s={[0.4, 0.6, 0.5]} c="#1f1a16" r={0.8} />
       <mesh position={[W - 0.545, 0.3, 2.2]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[0.36, 0.5]} />

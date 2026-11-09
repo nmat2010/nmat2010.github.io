@@ -7,7 +7,7 @@ import { Avatar, Fx, Pet, Place, clamp, dampAngle } from "./parts";
 import { Atmosphere, Model, usePBR } from "./gfx";
 import { HomeRoom } from "./home";
 import { BookScene, CafeScene, GateScene, WorkshopScene } from "./scenes";
-import { Awning, BookStall, CoffeeStall, EndGate, HouseFront, Mirror, PlaceMarker, RepairShop, UtilityPole } from "./Street";
+import { Awning, BookStall, CoffeeStall, EndGate, HouseFront, Mirror, PlaceMarker, RepairShop, UtilityPole, WallFlag } from "./Street";
 
 export type { Fx, Place };
 
@@ -23,7 +23,7 @@ export interface Interactable {
 export const STREET_ITEMS: Interactable[] = [
   { id: "home", label: "Go into Home: About", pos: [-2.1, -10], radius: 3.4, enter: "home" },
   { id: "cafe", label: "Sit down for coffee: Experience", pos: [1.9, -24], radius: 3.4, enter: "cafe" },
-  { id: "dog", label: "Pet the dog", pos: [1.5, -31], radius: 2 },
+  { id: "dog", label: "Pet Cậu Vàng the dog", pos: [1.5, -31], radius: 2 },
   { id: "workshop", label: "Step into the workshop: Projects", pos: [-2.1, -38], radius: 3.4, enter: "workshop" },
   { id: "books", label: "Browse the bookshop: Interests", pos: [1.9, -52], radius: 3.4, enter: "books" },
   { id: "gate", label: "Go into the post office: Contact", pos: [0, -63], radius: 3.6, enter: "gate" },
@@ -33,8 +33,7 @@ export const HOME_ITEMS: Interactable[] = [
   { id: "shelf", label: "Read the bookshelf", pos: [2.5, -4.0], radius: 1.4 },
   { id: "laptop", label: "Open the laptop", pos: [3.0, -3.1], radius: 1.4 },
   { id: "kitchen", label: "Look at the kitchen", pos: [0, 0], radius: 1 },
-  { id: "guitar", label: "Play the acoustic guitar", pos: [3.0, -1.2], radius: 1.3 },
-  { id: "electric", label: "Plug in the electric guitar", pos: [3.2, 0.5], radius: 1.3 },
+  { id: "radio", label: "Turn the radio on or off", pos: [3.0, 0.5], radius: 1.5 },
   { id: "door", label: "Step back outside", pos: [0, 2.6], radius: 1.5 },
 ];
 
@@ -59,7 +58,7 @@ const STREET_SOLIDS: Solid[] = [
   // Home porch: columns, bicycle, gate, planters
   { x: -2.1, z: -12.4, r: 0.28 },
   { x: -2.1, z: -7.6, r: 0.28 },
-  { x0: -2.3, x1: -1.7, z0: -8.1, z1: -6.9 },
+  { x0: -2.65, x1: -2.25, z0: -12.2, z1: -10.9 },
   { x0: -2.6, x1: -2.2, z0: -8.9, z1: -6.8 },
   { x0: -2.3, x1: -1.35, z0: -12.9, z1: -12.2 },
   { x: -1.8, z: -12.0, r: 0.3 },
@@ -131,8 +130,8 @@ const BOUNDS = {
   street: { x: 2.1, zMin: -68, zMax: 6 },
   home: { x: 3.3, zMin: -4.2, zMax: 2.8 },
 };
-const WALLS = ["#d9a441", "#e6c98a", "#b8553f", "#7a9a86", "#e0b96a", "#6f8fa0", "#c98a4a", "#d8c7a0"];
-const TRIMS = ["#f1e6cf", "#14111a", "#f1e6cf", "#14111a"];
+const WALLS = ["#d9b25a", "#ead7a6", "#c9806c", "#8fb39e", "#dcb872", "#8fa9b5", "#c9a07a", "#e2d6b4"];
+const TRIMS = ["#f4ead0", "#3b5a4e", "#f4ead0", "#6a4a2f"];
 
 interface Seg {
   z: number;
@@ -222,8 +221,9 @@ export const Building = ({
         <meshStandardMaterial map={tex} roughness={0.9} emissive="#ffffff" emissiveMap={tex} emissiveIntensity={0.18} />
       </mesh>
       {signTex && (
-        <mesh position={[side * 3.16, 4.05, 0]} rotation={[0, side * -Math.PI / 2, 0]}>
-          <planeGeometry args={[4.6, 1.4]} />
+        <mesh position={[side * 3.16, seg.spot === "home" ? 4.24 : 4.05, 0]} rotation={[0, side * -Math.PI / 2, 0]}>
+          {/* the house's sign is smaller: it has to fit between the porch roof and the balcony */}
+          <planeGeometry args={seg.spot === "home" ? [3.58, 1.09] : [4.6, 1.4]} />
           <meshBasicMaterial map={signTex} toneMapped={false} />
         </mesh>
       )}
@@ -285,9 +285,17 @@ const Player = ({
   const near = useRef<string | null>(null);
   const entering = useRef(false);
   const camLook = useRef(new THREE.Vector3(0, 1.2, -2));
+  const cameFromInside = useRef(false);
+  const lastPlace = useRef(place);
+  if (lastPlace.current !== place) {
+    cameFromInside.current = place === null;
+    lastPlace.current = place;
+  }
   const { camera } = useThree();
   const items = place === "home" ? HOME_ITEMS : STREET_ITEMS;
   const bounds = place === "home" ? BOUNDS.home : BOUNDS.street;
+  const dogSolid = useMemo(() => ({ x: 0, z: 0, r: 0.42 }), []);
+  const streetSolids = useMemo<Solid[]>(() => [...STREET_SOLIDS, dogSolid], [dogSolid]);
 
   useFrame((s, dtRaw) => {
     const dt = Math.min(dtRaw, 0.05);
@@ -321,7 +329,10 @@ const Player = ({
     p.x = clamp(p.x + vel.current.x * dt, -bounds.x, bounds.x);
     p.z = clamp(p.z + vel.current.y * dt, bounds.zMin, bounds.zMax);
     if (place === null) {
-      const [cx, cz] = resolveSolids(STREET_SOLIDS, p.x, p.z, 0.27);
+      // the dog is solid too: you walk around it, not through it
+      dogSolid.x = dogPos.current.x;
+      dogSolid.z = dogPos.current.y;
+      const [cx, cz] = resolveSolids(streetSolids, p.x, p.z, 0.27);
       p.x = cx;
       p.z = cz;
     }
@@ -374,8 +385,16 @@ const Player = ({
 
     if (place === null) {
       const target = new THREE.Vector3(p.x * 0.45, 3.4, p.z + 6.2);
-      camera.position.lerp(target, 1 - Math.exp(-4 * dt));
-      camLook.current.lerp(new THREE.Vector3(p.x * 0.7, 1.3, p.z - 2.5), 1 - Math.exp(-6 * dt));
+      const look = new THREE.Vector3(p.x * 0.7, 1.3, p.z - 2.5);
+      if (cameFromInside.current) {
+        // back from a shop or the house: arrive on the street camera instead of sweeping across from the interior
+        camera.position.copy(target);
+        camLook.current.copy(look);
+        cameFromInside.current = false;
+      } else {
+        camera.position.lerp(target, 1 - Math.exp(-4 * dt));
+        camLook.current.lerp(look, 1 - Math.exp(-6 * dt));
+      }
       camera.lookAt(camLook.current);
     }
   });
@@ -396,6 +415,8 @@ export interface WorldProps {
   fx: MutableRefObject<Fx>;
   selected: number;
   letterOpen: boolean;
+  reading: boolean;
+  radio: boolean;
   turn: MutableRefObject<number>;
   focus: "laptop" | "kitchen" | null;
   cafeBegin: MutableRefObject<number>;
@@ -450,7 +471,7 @@ const Scene = (p: WorldProps) => {
   };
   const awnings: [number, 1 | -1, [string, string, string]][] = [
     [-16.5, -1, ["#2c8c7e", "#f1e6cf", "#14392f"]],
-    [-28, -1, ["#d8342b", "#f1e6cf", "#1b4b9b"]],
+    [-27, -1, ["#d8342b", "#f1e6cf", "#1b4b9b"]],
     [-44, -1, ["#f4b73f", "#f1e6cf", "#d8342b"]],
     [0.5, 1, ["#d8342b", "#f1e6cf", "#1b4b9b"]],
     [-8, 1, ["#2c8c7e", "#f1e6cf", "#14392f"]],
@@ -460,14 +481,14 @@ const Scene = (p: WorldProps) => {
 
   return (
     <>
-      <color attach="background" args={["#bfe0ee"]} />
-      <fog attach="fog" args={["#e6dcc4", 18, 62]} />
+      <color attach="background" args={["#ecd9b0"]} />
+      <fog attach="fog" args={["#e8d3a6", 16, 58]} />
       <Atmosphere indoor={place !== null} />
 
       {/* ---------------- the hẻm ---------------- */}
       <group visible={place === null}>
-        <hemisphereLight args={["#d6ecfa", "#b89f78", 1.5]} />
-        <directionalLight position={[4, 14, 6]} intensity={2.4} color="#fff0cc" />
+        <hemisphereLight args={["#f6e4bc", "#a88a5e", 1.5]} />
+        <directionalLight position={[4, 14, 6]} intensity={2.3} color="#ffdda0" />
         {[[0, 2], [-2, -10], [0, -32], [0, -64]].map(([x, z]) => (
           <pointLight key={`${x}${z}`} position={[x, 3.2, z]} intensity={14} distance={16} decay={2} color="#ffd9a0" />
         ))}
@@ -509,6 +530,10 @@ const Scene = (p: WorldProps) => {
         </group>
         <EndGate />
 
+        {([[1, -5.5], [-1, -20.5], [1, -33], [-1, -47]] as [1 | -1, number][]).map(([side, z]) => (
+          <WallFlag key={z} side={side} z={z} />
+        ))}
+
         {awnings.map(([z, side, cols], i) => (
           <Awning key={i} side={side} z={z} depth={6} colors={cols} />
         ))}
@@ -533,10 +558,10 @@ const Scene = (p: WorldProps) => {
       {/* ---------------- inside ---------------- */}
       {place === "home" && (
         <Suspense fallback={null}>
-          <HomeRoom focus={p.focus} fx={p.fx} input={p.input} turn={p.turn} paused={p.paused} onNear={p.onNear} onPick={p.onInteract} catPos={catPos} />
+          <HomeRoom focus={p.focus} fx={p.fx} input={p.input} turn={p.turn} paused={p.paused} onNear={p.onNear} onPick={p.onInteract} catPos={catPos} radio={p.radio} />
         </Suspense>
       )}
-      {place === "cafe" && <CafeScene fx={p.fx} onPick={p.onInteract} begin={p.cafeBegin} />}
+      {place === "cafe" && <CafeScene fx={p.fx} onPick={p.onInteract} begin={p.cafeBegin} reading={p.reading} />}
       {place === "workshop" && (
         <Suspense fallback={null}>
           <WorkshopScene onPick={p.onInteract} selected={p.selected} />

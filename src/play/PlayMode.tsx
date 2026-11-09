@@ -1,24 +1,16 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Volume2, VolumeX, House } from "lucide-react";
-import { aboutStatement, focusAreas, researchInterests } from "@/data/about";
+import { aboutStatement, bookshelf, focusAreas } from "@/data/about";
+import { radioSong } from "@/data/music";
 import { ExperienceBody } from "@/components/ExperienceSection";
 import { projects } from "@/data/projects";
 import { ContactBody } from "@/components/ContactSection";
-import { bark, chime, meow, playBallad, playRiff, setMuted, stopMusic } from "./audio";
+import { bark, chime, meow, setMuted } from "./audio";
 import { Fx, Goal, HOME_ITEMS, PLACES, Place, STREET_ITEMS } from "./World";
 import { LaptopScreen, RecipePage } from "./overlays";
 
 const World = lazy(() => import("./World"));
-
-const BOOK_AREAS: Record<string, string> = {
-  "Robotics & Vision-Language-Action models": "AI research",
-  "AI interpretability": "AI research",
-  "Lifelong learning systems": "AI research",
-  "AI ethics & responsible AI": "Policy & governance",
-  "Political philosophy & governance": "Policy & governance",
-  "AI law & policy": "Policy & governance",
-};
 
 const KEYS: Record<string, [number, number]> = {
   KeyW: [0, -1],
@@ -59,6 +51,9 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
   const [near, setNear] = useState<string | null>(null);
   const [visited, setVisited] = useState<Set<string>>(new Set());
   const [muted, setMutedState] = useState(false);
+  const [radio, setRadio] = useState(false);
+  const radioRef = useRef(false);
+  const mutedRef = useRef(false);
   const [hint, setHint] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
   const [touch, setTouch] = useState(false);
@@ -72,6 +67,10 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
   const [focus, setFocus] = useState<"laptop" | "kitchen" | null>(null);
   const [screen, setScreen] = useState<"laptop" | "kitchen" | null>(null);
 
+  useEffect(() => {
+    radioRef.current = radio;
+  }, [radio]);
+
   const overlay = !!note || paper || project >= 0 || book >= 0 || letter || !!screen || !!focus;
 
   useEffect(() => {
@@ -84,7 +83,6 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
     ])
       .catch(() => undefined)
       .then(() => setReady(true));
-    return () => stopMusic();
   }, []);
 
   const say = useCallback((msg: string) => {
@@ -112,7 +110,6 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
   const go = useCallback((next: Place | null) => {
     setFade(true);
     window.setTimeout(() => {
-      stopMusic();
       timers.current.splice(0).forEach((t) => window.clearTimeout(t));
       clearOverlays();
       cafeBegin.current = -1;
@@ -126,13 +123,11 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
           return new Set(v).add(next);
         });
       }
-      window.setTimeout(() => setFade(false), 120);
-      if (next === "gate") later(() => setLetter(true), 1300);
+      window.setTimeout(() => setFade(false), 450); // hold the cover while the new scene mounts and its models load
       if (next === "cafe") {
         later(() => setGreeting(true), 900);
-        later(() => setPaper(true), 3600);
       }
-    }, 380);
+    }, 420);
   }, []);
 
   const interact = useCallback(
@@ -145,7 +140,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
         if (id === "dog") {
           fx.current.bark = t;
           bark();
-          say("Yip yip!");
+          say("Cậu Vàng says: woof woof!");
         }
         return;
       }
@@ -175,14 +170,10 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
                 </dl>
               ),
             });
-          case "guitar": {
-            const len = playBallad(() => (fx.current.strum = now()));
-            say(len ? "Strumming an Andalusian ballad…" : "Unmute to hear the guitar.");
-            return;
-          }
-          case "electric": {
-            const len = playRiff(() => (fx.current.riff = now()));
-            say(len ? "Plugged in. Turn it up." : "Unmute to hear the guitar.");
+          case "radio": {
+            if (mutedRef.current) return say("Unmute to hear the radio.");
+            setRadio(!radioRef.current);
+            say(radioRef.current ? "Radio off." : "Radio on: Diễm Xưa, Khánh Ly.");
             return;
           }
           case "cat":
@@ -198,6 +189,10 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
       if (place === "workshop" && id.startsWith("project-")) return setProject(Number(id.slice(8)));
       if (place === "books" && id.startsWith("book-")) return setBook(Number(id.slice(5)));
       if (place === "gate" && id === "letter") return setLetter(true);
+      if (place === "cafe" && id === "paper") {
+        setGreeting(false);
+        return setPaper(true);
+      }
     },
     [go, place, say],
   );
@@ -302,7 +297,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
     }
     stick.current = { x: dx, z: dy };
     input.current = { x: dx, z: dy };
-    if (knob.current) knob.current.style.transform = `translate(${dx * 34}px, ${dy * 34}px)`;
+    if (knob.current) knob.current.style.transform = `translate(${dx * 40}px, ${dy * 40}px)`;
     setHint(false);
   };
   const release = () => {
@@ -317,9 +312,9 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
   const selected = place === "workshop" ? project : place === "books" ? book : -1;
 
   const sceneHint: Record<string, string> = {
-    workshop: "Click a screen to open the project",
-    books: "Click a book on the shelf to read it",
-    gate: "Click the letter to open it",
+    workshop: touch ? "Swipe along the bench, tap a screen to open the project" : "Click a screen to open the project",
+    books: touch ? "Swipe along the shelf, tap a book to read it" : "Click a book on the shelf to read it",
+    gate: touch ? "Tap the letter to open it" : "Click the letter to open it",
   };
 
   return (
@@ -338,6 +333,8 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
             fx={fx}
             selected={selected}
             letterOpen={letter}
+            reading={paper}
+            radio={radio}
             turn={turn}
             focus={focus}
             cafeBegin={cafeBegin}
@@ -348,8 +345,13 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
       <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 55%, rgba(70,45,20,0.28) 100%)" }} />
 
       {/* HUD */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-3 sm:p-5">
-        <div className="pointer-events-auto flex flex-wrap items-center gap-1.5">
+      <div className="pointer-events-none absolute inset-x-0 top-0 flex flex-wrap items-start justify-between gap-2 p-3 sm:flex-nowrap sm:gap-3 sm:p-5">
+        {/* on a phone the places sit in a swipeable strip under the buttons instead of wrapping over the view */}
+        <div
+          className={`pointer-events-auto flex items-center gap-1.5 ${
+            place ? "order-1" : "order-2 -mx-3 w-[calc(100%+1.5rem)] flex-nowrap overflow-x-auto px-3 pb-1 [scrollbar-width:none] sm:order-1 sm:mx-0 sm:w-auto sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0"
+          }`}
+        >
           {place ? (
             <button onClick={() => go(null)} className="rounded-md bg-primary px-3 py-1.5 text-sm font-bold text-primary-foreground hover:bg-lantern hover:text-white">
               ← Back to the alley
@@ -360,7 +362,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
                 key={p.id}
                 onClick={() => walkTo(p.id)}
                 title={`Walk to ${p.label}`}
-                className={`rounded-md px-2.5 py-1 text-xs font-bold transition-colors ${
+                className={`shrink-0 whitespace-nowrap rounded-md px-2.5 py-1.5 text-xs font-bold transition-colors ${
                   visited.has(p.id) ? "bg-tile text-white" : "bg-marigold text-[#1c1410] hover:bg-lantern hover:text-white"
                 }`}
               >
@@ -370,13 +372,14 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
             ))
           )}
         </div>
-        <div className="pointer-events-auto flex items-center gap-2">
+        <div className="pointer-events-auto order-1 ml-auto flex items-center gap-2 sm:order-2">
           <button
             aria-label={muted ? "Unmute" : "Mute"}
             onClick={() => {
               setMutedState(!muted);
               setMuted(!muted);
-              if (!muted) stopMusic();
+              mutedRef.current = !muted;
+              if (!muted) setRadio(false);
             }}
             className="rounded-md bg-secondary p-2 text-foreground hover:bg-muted"
           >
@@ -384,13 +387,15 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
           </button>
           <button
             onClick={onHome}
-            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md bg-secondary px-3 py-2 text-sm font-bold text-foreground hover:bg-muted"
+            aria-label="Homepage"
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md bg-secondary px-2.5 py-2 text-sm font-bold text-foreground hover:bg-muted sm:px-3"
           >
             <House className="h-4 w-4" aria-hidden="true" />
-            Homepage
+            <span className="hidden sm:inline">Homepage</span>
           </button>
-          <button onClick={onExit} className="shrink-0 whitespace-nowrap rounded-md bg-secondary px-3.5 py-2 text-sm font-bold text-foreground hover:bg-muted">
-            View mode
+          <button onClick={onExit} className="shrink-0 whitespace-nowrap rounded-md bg-secondary px-3 py-2 text-sm font-bold text-foreground hover:bg-muted sm:px-3.5">
+            <span className="sm:hidden">View</span>
+            <span className="hidden sm:inline">View mode</span>
           </button>
         </div>
       </div>
@@ -400,7 +405,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
       )}
 
       {/* prompts */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-28 sm:bottom-10 flex flex-col items-center gap-3 px-4">
+      <div className="pointer-events-none absolute inset-x-0 bottom-44 sm:bottom-10 flex flex-col items-center gap-3 px-4">
         {toast && <div className="rounded-md bg-card px-3 py-1.5 text-sm font-semibold text-card-foreground">{toast}</div>}
         {place === "home" && !overlay && !nearItem && (
           <div className="rounded-md bg-secondary/90 px-4 py-2 text-center text-sm text-foreground">
@@ -436,24 +441,52 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
           onPointerMove={(e) => e.buttons && move(e)}
           onPointerUp={release}
           onPointerCancel={release}
-          className="absolute bottom-6 left-6 h-28 w-28 rounded-full bg-secondary/70 ring-2 ring-border"
+          className="absolute bottom-[max(1.5rem,env(safe-area-inset-bottom))] right-5 h-32 w-32 rounded-full bg-secondary/70 ring-2 ring-border"
           aria-label="Walk"
         >
-          <div ref={knob} className="absolute left-1/2 top-1/2 -ml-6 -mt-6 h-12 w-12 rounded-full bg-marigold/90" />
+          <div ref={knob} className="absolute left-1/2 top-1/2 -ml-7 -mt-7 h-14 w-14 rounded-full bg-marigold/90" />
+        </div>
+      )}
+
+      {/* the radio: what is playing. It carries on as you walk the alley and step into the shops, and only stops when you turn it off (or mute). The song itself comes from YouTube's embedded player, which has to stay visible while it plays. */}
+      {radio && (
+        <div className="board absolute left-3 top-28 z-10 w-[min(90vw,20rem)] p-3 sm:top-16 sm:p-4">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <p className="plate text-sm">Radio · Sài Gòn</p>
+            <button onClick={() => setRadio(false)} className="rounded-md bg-card-foreground px-2.5 py-1 text-xs font-bold text-card hover:bg-lantern">
+              Turn off
+            </button>
+          </div>
+          <h3 className="font-display text-2xl font-extrabold leading-tight">{radioSong.title}</h3>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-lantern">
+            {radioSong.composer} · sung by {radioSong.singer}
+          </p>
+          <p className="mt-2 hidden font-serif text-sm leading-relaxed sm:block">{radioSong.blurb}</p>
+          <div className="mt-3 w-[200px] overflow-hidden rounded-sm bg-black">
+            <iframe
+              title={`${radioSong.title}, ${radioSong.singer}`}
+              width={200}
+              height={113}
+              src={`https://www.youtube-nocookie.com/embed/${radioSong.video}?autoplay=1&loop=1&playlist=${radioSong.video}&rel=0`}
+              allow="autoplay; encrypted-media; picture-in-picture"
+              className="block border-0"
+            />
+          </div>
+          <p className="mt-1 text-[0.68rem] text-card-foreground/70">Playing from {radioSong.singer}'s official YouTube channel.</p>
         </div>
       )}
 
       {/* the vendor speaks */}
       <AnimatePresence>
         {greeting && !paper && (
-          <div className="pointer-events-none absolute inset-x-0 bottom-24 flex justify-center"><motion.div
+          <div className="pointer-events-none absolute inset-x-0 bottom-24 flex justify-center px-4"><motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="board px-5 py-3 text-center"
+            className="board max-w-full px-5 py-3 text-center"
           >
-            <p className="font-display text-xl font-bold">Here's your iced milk coffee, dear!</p>
-            <p className="text-xs text-card-foreground/70">Cà phê sữa đá của con nè!</p>
+            <p className="font-display text-xl font-bold">Here's your iced milk coffee, dear. And today's paper!</p>
+            <p className="text-xs text-card-foreground/70">Cà phê sữa đá và tờ báo của con nè! Tap the paper to unfold it.</p>
           </motion.div></div>
         )}
       </AnimatePresence>
@@ -483,16 +516,16 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
           <motion.div
             key="paper"
             initial={{ y: "110%", rotate: 4 }}
-            animate={{ y: 0, rotate: -1.2 }}
+            animate={{ y: 0, rotate: -0.5 }}
             exit={{ y: "110%", rotate: 4 }}
             transition={{ type: "spring", stiffness: 70, damping: 16 }}
             role="dialog"
             aria-label="Experience, in the newspaper"
-            className="vintage-paper absolute inset-x-2 bottom-2 top-[34%] overflow-y-auto rounded-[2px] p-5 shadow-2xl sm:inset-x-auto sm:left-[3%] sm:top-[9%] sm:w-[58%] sm:p-9"
+            className="vintage-paper absolute inset-x-2 bottom-2 top-[34%] overflow-y-auto rounded-[2px] p-5 shadow-2xl sm:inset-x-auto sm:left-[3%] sm:top-[6%] sm:w-[min(68%,62rem)] sm:p-9"
             style={{ transformOrigin: "50% 100%" }}
           >
             <CloseBtn onClick={() => setPaper(false)} label="Put the paper down" />
-            <div className="flex items-end justify-between gap-3 text-[0.62rem] font-semibold uppercase tracking-[0.16em] sm:text-xs">
+            <div className="flex items-end justify-between gap-3 pr-9 text-[0.62rem] font-semibold uppercase tracking-[0.16em] sm:pr-0 sm:text-xs">
               <span className="border border-[#2a2118] px-2 py-1">Special edition</span>
               <span className="hidden sm:inline">Saigon · Alley No. 1</span>
               <span className="border border-[#2a2118] px-2 py-1">Price: one coffee</span>
@@ -506,7 +539,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
               <span>★ Experience news ★</span>
             </div>
             <div className="mt-5">
-              <ExperienceBody />
+              <ExperienceBody graphics />
             </div>
             <div className="mt-6 flex items-center justify-between border-t border-[#2a2118] pt-3 text-[0.65rem] uppercase tracking-[0.18em]">
               <span>Printed in Saigon</span>
@@ -587,23 +620,33 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
             animate={{ opacity: 1, rotateX: 0, y: 0 }}
             exit={{ opacity: 0, y: 40 }}
             role="dialog"
-            aria-label={researchInterests[book]}
-            className="board pointer-events-auto relative grid w-[min(94vw,46rem)] gap-0 overflow-hidden p-0 sm:grid-cols-2"
+            aria-label={bookshelf[book].title}
+            className="board pointer-events-auto relative grid max-h-[88vh] w-[min(94vw,48rem)] gap-0 overflow-y-auto p-0 sm:grid-cols-[0.8fr_1.2fr]"
           >
             <CloseBtn onClick={() => setBook(-1)} />
-            <div className="flex min-h-[12rem] items-center border-b border-card-foreground/20 p-7 sm:border-b-0 sm:border-r">
-              <h3 className="font-display text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">{researchInterests[book]}</h3>
+            <div
+              className="flex min-h-[12rem] flex-col justify-end p-7"
+              style={{ background: bookshelf[book].cover.bg, color: bookshelf[book].cover.fg }}
+            >
+              <p className="text-xs font-bold uppercase tracking-[0.18em] opacity-80">{bookshelf[book].area}</p>
+              <h3 className="mt-2 font-display text-3xl font-extrabold uppercase leading-tight tracking-tight sm:text-4xl">{bookshelf[book].title}</h3>
+              <p className="mt-2 text-sm opacity-90">{bookshelf[book].subtitle}</p>
             </div>
             <div className="p-7">
-              <p className="text-sm font-bold uppercase tracking-[0.14em] text-lantern">{BOOK_AREAS[researchInterests[book]]}</p>
-              <p className="mt-3 font-serif text-xl leading-relaxed">
-                {focusAreas.find((f) => f.title === BOOK_AREAS[researchInterests[book]])?.description}
-              </p>
+              <p className="text-sm font-bold uppercase tracking-[0.14em] text-lantern">Why I love this</p>
+              <p className="mt-3 font-serif text-lg leading-relaxed sm:text-xl">{bookshelf[book].why}</p>
+              <ul className="mt-4 flex flex-wrap gap-2">
+                {bookshelf[book].tags.map((t) => (
+                  <li key={t} className="rounded-full border border-card-foreground/40 px-3 py-0.5 text-xs font-semibold">
+                    {t}
+                  </li>
+                ))}
+              </ul>
               <div className="mt-6 flex gap-2">
                 <button disabled={book === 0} onClick={() => setBook(book - 1)} className="rounded-md bg-card-foreground px-3 py-1.5 text-sm font-bold text-card disabled:opacity-30">
                   Previous
                 </button>
-                <button disabled={book === researchInterests.length - 1} onClick={() => setBook(book + 1)} className="rounded-md bg-card-foreground px-3 py-1.5 text-sm font-bold text-card disabled:opacity-30">
+                <button disabled={book === bookshelf.length - 1} onClick={() => setBook(book + 1)} className="rounded-md bg-card-foreground px-3 py-1.5 text-sm font-bold text-card disabled:opacity-30">
                   Next
                 </button>
               </div>
@@ -643,7 +686,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
       <AnimatePresence>{screen === "kitchen" && <RecipePage key="recipe" onClose={closeScreen} />}</AnimatePresence>
 
       {/* scene change */}
-      <div className={`pointer-events-none absolute inset-0 bg-[#f2e6c9] transition-opacity duration-300 ${fade ? "opacity-100" : "opacity-0"}`} />
+      <div className={`pointer-events-none absolute inset-0 bg-[#f2e6c9] transition-opacity duration-[380ms] ease-in-out ${fade ? "opacity-100" : "opacity-0"}`} />
     </div>
   );
 }

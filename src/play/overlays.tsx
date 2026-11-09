@@ -172,7 +172,7 @@ export const LaptopScreen = ({ onClose }: { onClose: () => void }) => {
       <header className="relative z-30 flex items-center justify-between bg-[#f1e6cf] px-4 py-1.5 text-sm font-semibold shadow">
         <span className="font-display tracking-widest">THU.OS</span>
         <button onClick={onClose} className="rounded border-2 border-[#2a2118] bg-[#f6eed8] px-3 py-0.5 hover:bg-[#990000] hover:text-white">
-          Close laptop (Esc)
+          Close laptop<span className="hidden sm:inline"> (Esc)</span>
         </button>
       </header>
 
@@ -333,9 +333,9 @@ export const RecipePage = ({ onClose }: { onClose: () => void }) => {
         className="absolute right-3 top-3 z-10 rounded bg-[#2a1d12] px-3 py-1.5 text-sm font-bold text-[#f4ecd6] hover:bg-[#a8392b]"
         style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
       >
-        Close notebook (Esc)
+        Close<span className="hidden sm:inline"> notebook (Esc)</span>
       </button>
-      <div className="relative h-full overflow-y-auto pl-16 pr-6 pt-5 sm:pl-36 sm:pr-16 sm:pt-8 text-[#1f2a44]">
+      <div className="relative h-full overflow-y-auto pl-16 pr-6 pt-14 sm:pl-36 sm:pr-16 sm:pt-8 text-[#1f2a44]">
         <p className="text-sm text-[#c23b2e] sm:text-lg" style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}>
           Name: Thu Nguyen &nbsp;·&nbsp; Subject: the kitchen
         </p>
