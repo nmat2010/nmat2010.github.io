@@ -21,11 +21,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+
       - name: Compile resume
-        uses: xu-cong/latex-action@v3
-        with:
-          root_file: resume.tex
-          working_directory: resume
+        working-directory: resume
+        run: pdflatex -interaction=nonstopmode -halt-on-error resume.tex
 
       - name: Publish resume PDF
         run: cp resume/resume.pdf public/resume.pdf
