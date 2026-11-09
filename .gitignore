@@ -22,3 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+.impeccable/
+
+PRODUCT.md
+
+# local tooling, test captures and source photos that are not part of the site
+.playwright-mcp/
+.vite/
+.claude/
+.github/hooks/
+DESIGN.md
+food-originals/
