@@ -92,3 +92,51 @@ export const chime = () => {
   if (muted) return;
   [523.25, 659.25, 783.99].forEach((f, i) => pluck(f, i * 0.08, 0.14, 1));
 };
+
+/** A page turning: a breath of filtered noise that rises and falls */
+export const paperTurn = () => {
+  if (muted) return;
+  const c = ac();
+  const len = Math.floor(c.sampleRate * 0.6);
+  const buf = c.createBuffer(1, len, c.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  const src = c.createBufferSource();
+  src.buffer = buf;
+  const f = c.createBiquadFilter();
+  f.type = "bandpass";
+  f.Q.value = 0.9;
+  f.frequency.setValueAtTime(900, c.currentTime);
+  f.frequency.exponentialRampToValueAtTime(3600, c.currentTime + 0.4);
+  const g = c.createGain();
+  g.gain.setValueAtTime(0.0001, c.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.16, c.currentTime + 0.18);
+  g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.55);
+  src.connect(f).connect(g).connect(c.destination);
+  src.start();
+};
+
+let stepNoise: AudioBuffer | null = null;
+
+/** One footfall: a short filtered burst. Duller and softer on the house floor, crisper on the street. */
+export const footstep = (indoor: boolean, vol = 1) => {
+  if (muted) return;
+  const c = ac();
+  if (!stepNoise) {
+    stepNoise = c.createBuffer(1, Math.floor(c.sampleRate * 0.12), c.sampleRate);
+    const d = stepNoise.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  }
+  const src = c.createBufferSource();
+  src.buffer = stepNoise;
+  src.playbackRate.value = 0.85 + Math.random() * 0.3;
+  const f = c.createBiquadFilter();
+  f.type = "lowpass";
+  f.frequency.value = (indoor ? 520 : 1100) * (0.85 + Math.random() * 0.3);
+  const g = c.createGain();
+  const peak = (indoor ? 0.13 : 0.1) * vol;
+  g.gain.setValueAtTime(peak, c.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + (indoor ? 0.09 : 0.07));
+  src.connect(f).connect(g).connect(c.destination);
+  src.start();
+};

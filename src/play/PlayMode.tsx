@@ -1,13 +1,14 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Volume2, VolumeX, House } from "lucide-react";
+import { X, Volume2, VolumeX, House, CircleHelp } from "lucide-react";
 import { aboutStatement, bookshelf, focusAreas } from "@/data/about";
 import { radioSong } from "@/data/music";
-import { ExperienceBody } from "@/components/ExperienceSection";
+import { ExperienceNewspaper } from "@/components/ExperienceNewspaper";
 import { projects } from "@/data/projects";
 import { ContactBody } from "@/components/ContactSection";
-import { bark, chime, meow, setMuted } from "./audio";
+import { bark, chime, meow, paperTurn, setMuted } from "./audio";
 import { Fx, Goal, HOME_ITEMS, PLACES, Place, STREET_ITEMS } from "./World";
+import { Guide, guideSeen, rememberGuide } from "./Guide";
 import { LaptopScreen, RecipePage } from "./overlays";
 
 const World = lazy(() => import("./World"));
@@ -55,6 +56,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
   const radioRef = useRef(false);
   const mutedRef = useRef(false);
   const [hint, setHint] = useState(true);
+  const [guide, setGuide] = useState(() => !guideSeen());
   const [toast, setToast] = useState<string | null>(null);
   const [touch, setTouch] = useState(false);
   const [ready, setReady] = useState(false);
@@ -71,7 +73,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
     radioRef.current = radio;
   }, [radio]);
 
-  const overlay = !!note || paper || project >= 0 || book >= 0 || letter || !!screen || !!focus;
+  const overlay = guide || !!note || paper || project >= 0 || book >= 0 || letter || !!screen || !!focus;
 
   useEffect(() => {
     setTouch(window.matchMedia("(pointer: coarse)").matches);
@@ -207,6 +209,11 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
     later(() => setFocus(null), 450);
   }, []);
 
+  const closeGuide = useCallback(() => {
+    rememberGuide();
+    setGuide(false);
+  }, []);
+
   const walkTo = (placeId: string) => {
     const pl = PLACES.find((p) => p.id === placeId)!;
     goal.current = { x: pl.pos[0], z: pl.pos[1], id: placeId };
@@ -239,6 +246,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
         if (screen || focus) {
           closeScreen();
         } else if (overlay) {
+          closeGuide();
           setNote(null);
           setPaper(false);
           setProject(-1);
@@ -274,7 +282,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
     };
-  }, [interact, overlay, place, go, screen, focus, closeScreen]);
+  }, [interact, overlay, place, go, screen, focus, closeScreen, closeGuide]);
 
   useEffect(() => {
     if (overlay) {
@@ -309,6 +317,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
   const items = place === "home" ? HOME_ITEMS : place === null ? STREET_ITEMS : [];
   const nearItem = items.find((i) => i.id === near);
   const walking = place === null || place === "home";
+  const nextStop = PLACES.find((p) => !visited.has(p.id));
   const selected = place === "workshop" ? project : place === "books" ? book : -1;
 
   const sceneHint: Record<string, string> = {
@@ -373,6 +382,9 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
           )}
         </div>
         <div className="pointer-events-auto order-1 ml-auto flex items-center gap-2 sm:order-2">
+          <button aria-label="How to play" title="How to play" onClick={() => setGuide(true)} className="rounded-md bg-secondary p-2 text-foreground hover:bg-muted">
+            <CircleHelp className="h-4 w-4" />
+          </button>
           <button
             aria-label={muted ? "Unmute" : "Mute"}
             onClick={() => {
@@ -417,6 +429,15 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
             {touch ? "Drag the stick or tap the street to walk. Tap a yellow sign to go there." : "WASD or click the street to walk · walk up to a doorway to go in · or use the yellow signs"}
           </div>
         )}
+        {!hint && !nearItem && place === null && !overlay && nextStop && (
+          <button
+            onClick={() => walkTo(nextStop.id)}
+            className="pointer-events-auto rounded-md bg-secondary/90 px-4 py-2 text-sm text-foreground shadow hover:bg-card"
+          >
+            <span className="mr-2 font-semibold text-foreground/70">{visited.size} of {PLACES.length} places</span>
+            <b>Next: {nextStop.label}</b> · {nextStop.sub} →
+          </button>
+        )}
         {place && !walking && !overlay && sceneHint[place] && (
           <div className="rounded-md bg-secondary/90 px-4 py-2 text-sm text-foreground">{sceneHint[place]}</div>
         )}
@@ -446,6 +467,17 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
         >
           <div ref={knob} className="absolute left-1/2 top-1/2 -ml-7 -mt-7 h-14 w-14 rounded-full bg-marigold/90" />
         </div>
+      )}
+
+      {guide && (
+        <Guide
+          touch={touch}
+          onStart={closeGuide}
+          onView={() => {
+            closeGuide();
+            onExit();
+          }}
+        />
       )}
 
       {/* the radio: what is playing. It carries on as you walk the alley and step into the shops, and only stops when you turn it off (or mute). The song itself comes from YouTube's embedded player, which has to stay visible while it plays. */}
@@ -521,32 +553,11 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
             transition={{ type: "spring", stiffness: 70, damping: 16 }}
             role="dialog"
             aria-label="Experience, in the newspaper"
-            className="vintage-paper absolute inset-x-2 bottom-2 top-[34%] overflow-y-auto rounded-[2px] p-5 shadow-2xl sm:inset-x-auto sm:left-[3%] sm:top-[6%] sm:w-[min(68%,62rem)] sm:p-9"
+            className="vintage-paper newsprint absolute inset-x-2 bottom-2 top-[34%] rounded-[2px] shadow-2xl sm:inset-x-auto sm:left-[3%] sm:top-[6%] sm:w-[min(68%,62rem)] min-[900px]:left-[2%] min-[900px]:w-[min(96%,82rem)]"
             style={{ transformOrigin: "50% 100%" }}
           >
             <CloseBtn onClick={() => setPaper(false)} label="Put the paper down" />
-            <div className="flex items-end justify-between gap-3 pr-9 text-[0.62rem] font-semibold uppercase tracking-[0.16em] sm:pr-0 sm:text-xs">
-              <span className="border border-[#2a2118] px-2 py-1">Special edition</span>
-              <span className="hidden sm:inline">Saigon · Alley No. 1</span>
-              <span className="border border-[#2a2118] px-2 py-1">Price: one coffee</span>
-            </div>
-            <div className="mt-2 border-y-[4px] border-double border-[#2a2118] py-1 text-center">
-              <p className="font-display text-[2.4rem] font-bold uppercase leading-none tracking-[0.1em] sm:text-[3.9rem]">The Alley Times</p>
-            </div>
-            <div className="flex items-center justify-between border-b border-[#2a2118] py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] sm:text-xs">
-              <span>★ Experience news ★</span>
-              <span>Báo Hẻm · read over coffee</span>
-              <span>★ Experience news ★</span>
-            </div>
-            <div className="mt-5">
-              <ExperienceBody graphics />
-            </div>
-            <div className="mt-6 flex items-center justify-between border-t border-[#2a2118] pt-3 text-[0.65rem] uppercase tracking-[0.18em]">
-              <span>Printed in Saigon</span>
-              <button onClick={() => setPaper(false)} className="rounded-sm bg-[#2a2118] px-3 py-1.5 text-sm font-bold normal-case tracking-normal text-[#e8d9ae] hover:bg-lantern hover:text-white">
-                Put the paper down
-              </button>
-            </div>
+            <ExperienceNewspaper onTurn={paperTurn} onClose={() => setPaper(false)} />
           </motion.div>
         )}
       </AnimatePresence>

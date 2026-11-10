@@ -13,36 +13,6 @@ export interface ExperienceStat {
   label: string;
 }
 
-/** `label` is YYYY-MM */
-export interface CommitMonth {
-  label: string;
-  count: number;
-}
-
-/** Commits to humanlab/WTC-LibraryOfCongress by month, counted from the GitHub API on 9 Nov 2026 */
-export const wtcCommitsByMonth: CommitMonth[] = [
-  { label: "2025-04", count: 1 },
-  { label: "2025-05", count: 0 },
-  { label: "2025-06", count: 0 },
-  { label: "2025-07", count: 0 },
-  { label: "2025-08", count: 0 },
-  { label: "2025-09", count: 0 },
-  { label: "2025-10", count: 3 },
-  { label: "2025-11", count: 3 },
-  { label: "2025-12", count: 33 },
-  { label: "2026-01", count: 4 },
-  { label: "2026-02", count: 7 },
-  { label: "2026-03", count: 25 },
-  { label: "2026-04", count: 15 },
-  { label: "2026-05", count: 31 },
-  { label: "2026-06", count: 0 },
-  { label: "2026-07", count: 0 },
-  { label: "2026-08", count: 6 },
-  { label: "2026-09", count: 41 },
-  { label: "2026-10", count: 20 },
-  { label: "2026-11", count: 28 },
-];
-
 export interface Experience {
   title: string;
   company: string;
@@ -51,6 +21,10 @@ export interface Experience {
   description: string;
   /** a short summary list, shown first when a role is opened */
   tldr?: string[];
+  /** one line from the highlights, set large as a pull quote in the newspaper */
+  pullQuote?: string;
+  /** the job title in Vietnamese, printed as a second headline for a role in Vietnam */
+  localTitle?: string;
   /** either a flat list of bullets or a list of expandable categories */
   highlights: string[] | ExperienceCategory[];
   logo: string;
@@ -60,8 +34,6 @@ export interface Experience {
   logoCaption?: string;
   /** a boxed run of figures shown under the headline */
   stats?: ExperienceStat[];
-  /** graphics printed under the stats */
-  figures?: ("pipeline" | "commits")[];
 }
 
 export const isCategorised = (h: Experience["highlights"]): h is ExperienceCategory[] => typeof h[0] === "object";
@@ -74,6 +46,7 @@ export const experiences: Experience[] = [
     period: "April 2025 - Present",
     description:
       "Led the team building a searchable archive for the Remembering 9/11 Oral History Project: 490 first-responder interviews, from a search box on the web to a touch-screen kiosk in a museum.",
+    pullQuote: "A transcript rebuild that was rolled back, diagnosed and replanned when it broke syncing.",
     tldr: [
       "Architected the full stack: FastAPI backend, React frontend, hybrid semantic search (PostgreSQL full-text + pgvector) and AWS infrastructure (S3, EC2, CloudWatch)",
       "Built the ML pipeline behind the archive: WhisperX transcription with word-level timing, LLM-generated chapters, and a transcript rebuild that was rolled back, diagnosed and replanned when it broke syncing",
@@ -303,10 +276,10 @@ export const experiences: Experience[] = [
       { value: "41", label: "merged pull requests" },
       { value: "217", label: "commits since April 2025" },
     ],
-    figures: ["pipeline", "commits"],
   },
   {
     title: "Software Engineer Intern",
+    localTitle: "Thực tập sinh phần mềm",
     company: "FPT Software",
     location: "Ho Chi Minh City, Vietnam",
     period: "June 2025 - August 2025",

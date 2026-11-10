@@ -4,6 +4,7 @@ import { useCursor } from "@react-three/drei";
 import * as THREE from "three";
 import { facadeTexture, signTexture, ShopKind } from "./textures";
 import { Avatar, Fx, Pet, Place, clamp, dampAngle } from "./parts";
+import { footstep } from "./audio";
 import { Atmosphere, Model, usePBR } from "./gfx";
 import { HomeRoom } from "./home";
 import { BookScene, CafeScene, GateScene, WorkshopScene } from "./scenes";
@@ -283,6 +284,7 @@ const Player = ({
   const vel = useRef(new THREE.Vector2());
   const face = useRef(Math.PI);
   const near = useRef<string | null>(null);
+  const stride = useRef(0);
   const entering = useRef(false);
   const camLook = useRef(new THREE.Vector3(0, 1.2, -2));
   const cameFromInside = useRef(false);
@@ -348,6 +350,12 @@ const Player = ({
       }
     }
     const k2 = Math.min(1, speed / 3.8);
+    // a footfall each time a leg passes under the body, which is when the walk bounce bottoms out
+    const beat = Math.floor((t * 10) / Math.PI);
+    if (beat !== stride.current) {
+      stride.current = beat;
+      if (k2 > 0.4 && !paused) footstep(place === "home", k2);
+    }
     const sw = Math.sin(t * 10) * 0.75 * k2;
     if (legL.current) legL.current.rotation.x = sw;
     if (legR.current) legR.current.rotation.x = -sw;

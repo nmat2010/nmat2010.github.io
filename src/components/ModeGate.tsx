@@ -69,7 +69,7 @@ export const ModeGate = ({ onChoose }: { onChoose: (m: "play" | "view") => void 
               <span className="mt-4 block font-display text-3xl font-bold leading-tight">My little Saigon alley</span>
               <span className="mt-2 block font-serif text-lg leading-snug text-card-foreground/85">
                 {gl
-                  ? "If you have time, please take a visit to my mini Saigon alley."
+                  ? "A tiny walkable alley. Each door opens a part of my portfolio: about, experience, projects, interests and contact."
                   : "This browser doesn't support WebGL, so the alley can't open here. View mode has everything."}
               </span>
             </button>

@@ -162,6 +162,17 @@
       linear-gradient(90deg, transparent 49.6%, rgba(70, 44, 18, 0.22) 50%, rgba(255, 245, 210, 0.25) 50.4%, transparent 50.8%);
     text-shadow: 0 0 1px rgba(42, 33, 24, 0.35);
   }
+  /* the newspaper's stock: paler, greyer newsprint with no fold line through the text */
+  .vintage-paper.newsprint {
+    background-color: #efe3c6;
+    background-image:
+      radial-gradient(ellipse at 50% 45%, transparent 62%, rgba(110, 72, 28, 0.22) 100%),
+      radial-gradient(circle at 18% 22%, rgba(120, 76, 28, 0.07) 0, transparent 14%),
+      radial-gradient(circle at 82% 70%, rgba(120, 76, 28, 0.08) 0, transparent 16%);
+  }
+  .vintage-paper.newsprint::before {
+    opacity: 0.32;
+  }
   .vintage-paper::before {
     content: "";
     position: absolute;
@@ -183,8 +194,9 @@
     letter-spacing: 0.02em;
     line-height: 1.08;
     font-size: clamp(1.35rem, 2.6vw, 1.85rem);
-    color: #1d150d;
-    text-shadow: 0 0 1px rgba(29, 21, 13, 0.55);
+    color: var(--ink, #1d150d);
+    /* a second ink printed a hair off register */
+    text-shadow: 1.5px 1px 0 var(--ink2, rgba(29, 21, 13, 0.35));
   }
   .vintage-paper .np-deck {
     font-family: "Newsreader", Georgia, serif;
@@ -224,6 +236,29 @@
   }
 
   /* Printed graphics for the Experience news: a halftone logo plate, boxed figures, a five-step diagram */
+  /* a story's text and its logo plate sit side by side once the page (not the screen) is wide enough */
+  .np-story-plate {
+    width: 7rem;
+  }
+  @container (min-width: 34rem) {
+    .np-story {
+      grid-template-columns: 1fr 9.5rem;
+    }
+    .np-story-plate {
+      width: 100%;
+    }
+  }
+  .vintage-paper .np-dropcap::first-letter {
+    float: left;
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 3.7em;
+    line-height: 0.8;
+    padding: 0.06em 0 0 0;
+    margin-right: -0.04em;
+    color: var(--ink, #c8402b);
+    text-shadow: none;
+  }
   .np-plate-img {
     position: relative;
     display: flex;
@@ -231,14 +266,15 @@
     justify-content: center;
     aspect-ratio: 3 / 2;
     padding: 0.4rem;
-    border: 1px solid hsl(var(--card-foreground) / 0.55);
-    outline: 3px double hsl(var(--card-foreground) / 0.35);
+    border: 1px solid var(--ink, #2a2118);
+    outline: 3px double var(--ink, #2a2118);
     outline-offset: 2px;
-    background: hsl(var(--card-foreground) / 0.06);
+    background: color-mix(in srgb, var(--ink, #2a2118) 16%, transparent);
   }
+  /* a one-ink halftone: the logo goes grey, then multiplies into the tint */
   .np-plate-img img {
     mix-blend-mode: multiply;
-    filter: sepia(0.4) contrast(1.08) saturate(0.85);
+    filter: grayscale(1) contrast(1.15);
   }
   .np-plate-img::after {
     content: "";
@@ -288,47 +324,6 @@
     text-shadow: none;
     letter-spacing: 0.01em;
     color: hsl(var(--card-foreground));
-  }
-  .np-pipeline {
-    display: grid;
-    gap: 0.25rem;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  .np-step {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .np-step-card {
-    display: grid;
-    grid-template-columns: 2rem 1fr;
-    column-gap: 0.75rem;
-    align-items: center;
-    align-content: start;
-    padding: 0.5rem 0.6rem;
-    border: 1px solid hsl(var(--card-foreground) / 0.6);
-  }
-  .np-step-card svg {
-    grid-row: span 2;
-    color: hsl(var(--lantern));
-  }
-  .np-step-name {
-    font-family: "Oswald", sans-serif;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    font-size: 0.9rem;
-    text-shadow: none;
-  }
-  .np-arrow {
-    align-self: center;
-    width: 1.1rem;
-    height: 0.6rem;
-    margin: 0.15rem 0;
-    transform: rotate(90deg);
-    color: hsl(var(--card-foreground) / 0.7);
   }
   .drift {
     animation: drift 28s ease-in-out infinite alternate;
