@@ -1,11 +1,12 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Volume2, VolumeX, House, CircleHelp } from "lucide-react";
+import { X, Volume2, VolumeX, House, CircleHelp, MessageSquare } from "lucide-react";
 import { aboutStatement, bookshelf, focusAreas } from "@/data/about";
 import { radioSong } from "@/data/music";
 import { ExperienceNewspaper } from "@/components/ExperienceNewspaper";
 import { projects } from "@/data/projects";
 import { ContactBody } from "@/components/ContactSection";
+import { FeedbackDialog } from "@/components/FeedbackDialog";
 import { bark, chime, meow, paperTurn, setMuted } from "./audio";
 import { Fx, Goal, HOME_ITEMS, PLACES, Place, STREET_ITEMS } from "./World";
 import { Guide, guideSeen, rememberGuide } from "./Guide";
@@ -66,6 +67,11 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
   const [project, setProject] = useState(-1);
   const [book, setBook] = useState(-1);
   const [letter, setLetter] = useState(false);
+  /** after the letter is read: where to next */
+  const [farewell, setFarewell] = useState(false);
+  const [feedback, setFeedback] = useState(false);
+  /** feedback was opened from the "where to next" popup, so closing it brings that back */
+  const feedbackFromFarewell = useRef(false);
   const [focus, setFocus] = useState<"laptop" | "kitchen" | null>(null);
   const [screen, setScreen] = useState<"laptop" | "kitchen" | null>(null);
 
@@ -73,7 +79,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
     radioRef.current = radio;
   }, [radio]);
 
-  const overlay = guide || !!note || paper || project >= 0 || book >= 0 || letter || !!screen || !!focus;
+  const overlay = guide || !!note || paper || project >= 0 || book >= 0 || letter || farewell || feedback || !!screen || !!focus;
 
   useEffect(() => {
     setTouch(window.matchMedia("(pointer: coarse)").matches);
@@ -92,6 +98,13 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
     window.setTimeout(() => setToast((t) => (t === msg ? null : t)), 2200);
   }, []);
 
+  /** a scooter has just knocked you down at the mouth of the alley: a different line each time */
+  const onEdge = useCallback(
+    (n: number) =>
+      say(["Too dangerous! Back to the alley.", "Ow... the main road can wait.", "A scooter! Okay, okay, back to the hẻm.", "Nope. Everything's in the alley."][n % 4]),
+    [say],
+  );
+
   const now = () => (performance.now() - clock.current) / 1000;
   const clearOverlays = () => {
     setNote(null);
@@ -100,6 +113,8 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
     setProject(-1);
     setBook(-1);
     setLetter(false);
+    setFarewell(false);
+    setFeedback(false);
     setScreen(null);
     setFocus(null);
   };
@@ -251,6 +266,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
           setPaper(false);
           setProject(-1);
           setBook(-1);
+          setFarewell(letter);
           setLetter(false);
         } else if (place) go(null);
         return;
@@ -282,7 +298,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
     };
-  }, [interact, overlay, place, go, screen, focus, closeScreen, closeGuide]);
+  }, [interact, overlay, place, go, screen, focus, letter, closeScreen, closeGuide]);
 
   useEffect(() => {
     if (overlay) {
@@ -339,6 +355,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
             visited={visited}
             onNear={onNear}
             onInteract={interact}
+            onEdge={onEdge}
             fx={fx}
             selected={selected}
             letterOpen={letter}
@@ -396,6 +413,14 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
             className="rounded-md bg-secondary p-2 text-foreground hover:bg-muted"
           >
             {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </button>
+          <button
+            onClick={() => setFeedback(true)}
+            aria-label="Send feedback"
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md bg-secondary px-2.5 py-2 text-sm font-bold text-foreground hover:bg-muted sm:px-3"
+          >
+            <MessageSquare className="h-4 w-4" aria-hidden="true" />
+            <span className="hidden lg:inline">Feedback</span>
           </button>
           <button
             onClick={onHome}
@@ -684,7 +709,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
               borderImage: "repeating-linear-gradient(135deg, #d8342b 0 14px, #f3ead7 14px 24px, #1b4b9b 24px 38px, #f3ead7 38px 48px) 12",
             }}
           >
-            <CloseBtn onClick={() => setLetter(false)} />
+            <CloseBtn onClick={() => { setLetter(false); setFarewell(true); }} />
             <div>
               <ContactBody />
             </div>
@@ -693,8 +718,65 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
         )}
       </AnimatePresence>
 
+      {/* the letter is read: where to next */}
+      <AnimatePresence>
+        {farewell && (
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-3">
+            <motion.div
+              key="farewell"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 24 }}
+              role="dialog"
+              aria-label="Where to next"
+              className="board pointer-events-auto relative w-[min(92vw,26rem)] p-6 text-center sm:p-8"
+            >
+              <p className="font-display text-2xl font-extrabold leading-tight">Letter read. Where to next?</p>
+              <div className="mt-5 flex flex-col gap-2.5">
+                <button onClick={onHome} className="flex items-center justify-center gap-2 rounded-md bg-secondary px-4 py-2.5 text-sm font-bold text-foreground hover:bg-muted">
+                  <House className="h-4 w-4" aria-hidden="true" />
+                  Back to the homepage
+                </button>
+                <button onClick={onExit} className="rounded-md bg-secondary px-4 py-2.5 text-sm font-bold text-foreground hover:bg-muted">
+                  Go to view mode
+                </button>
+                <button
+                  onClick={() => {
+                    setFarewell(false);
+                    go(null);
+                  }}
+                  className="rounded-md bg-card-foreground px-4 py-2.5 text-sm font-bold text-card hover:bg-lantern"
+                >
+                  Stay in the alley
+                </button>
+                <button
+                  onClick={() => {
+                    feedbackFromFarewell.current = true;
+                    setFarewell(false);
+                    setFeedback(true);
+                  }}
+                  className="flex items-center justify-center gap-2 rounded-md bg-secondary px-4 py-2.5 text-sm font-bold text-foreground hover:bg-muted"
+                >
+                  <MessageSquare className="h-4 w-4" aria-hidden="true" />
+                  Leave a message
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>{screen === "laptop" && <LaptopScreen key="laptop" onClose={closeScreen} />}</AnimatePresence>
       <AnimatePresence>{screen === "kitchen" && <RecipePage key="recipe" onClose={closeScreen} />}</AnimatePresence>
+
+      {feedback && (
+        <FeedbackDialog context={`the alley${place ? `, ${PLACES.find((p) => p.id === place)?.label ?? place}` : ""}`} onClose={() => {
+            setFeedback(false);
+            if (feedbackFromFarewell.current) setFarewell(true);
+            feedbackFromFarewell.current = false;
+          }}
+        />
+      )}
 
       {/* scene change */}
       <div className={`pointer-events-none absolute inset-0 bg-[#f2e6c9] transition-opacity duration-[380ms] ease-in-out ${fade ? "opacity-100" : "opacity-0"}`} />

@@ -4,7 +4,9 @@ import { useCursor } from "@react-three/drei";
 import * as THREE from "three";
 import { facadeTexture, signTexture, ShopKind } from "./textures";
 import { Avatar, Fx, Pet, Place, clamp, dampAngle } from "./parts";
-import { footstep } from "./audio";
+import { footstep, honk, motoPass, thud } from "./audio";
+import { Dazed, Motorbike } from "./moto";
+import { MainRoad } from "./road";
 import { Atmosphere, Model, usePBR } from "./gfx";
 import { HomeRoom } from "./home";
 import { BookScene, CafeScene, GateScene, WorkshopScene } from "./scenes";
@@ -126,6 +128,14 @@ const resolveSolids = (solids: Solid[], x: number, z: number, r: number): [numbe
   }
   return [x, z];
 };
+
+/** the "Post Office" sign hangs over the porch of the building itself, not short of it in the alley */
+const POST_OFFICE_SIGN_Z = -68.3;
+/** the scooter rides the near lane of the main road the alley opens onto */
+const MOTO_SPEED = 28;
+const MOTO_LANE = 9.7;
+/** how far out the character steps: onto the pavement at the edge of the main road */
+const STEP_OUT = 8.4;
 
 const BOUNDS = {
   street: { x: 2.1, zMin: -68, zMax: 6 },
@@ -262,6 +272,7 @@ const Player = ({
   pos,
   onNear,
   onArrive,
+  onEdge,
   dogPos,
   catPos,
 }: {
@@ -272,6 +283,7 @@ const Player = ({
   pos: MutableRefObject<THREE.Vector3>;
   onNear: (id: string | null) => void;
   onArrive: (id: string) => void;
+  onEdge?: (count: number) => void;
   dogPos: MutableRefObject<THREE.Vector2>;
   catPos: MutableRefObject<THREE.Vector2>;
 }) => {
@@ -285,6 +297,15 @@ const Player = ({
   const face = useRef(Math.PI);
   const near = useRef<string | null>(null);
   const stride = useRef(0);
+  const cooldown = useRef(0);
+  const edges = useRef(0);
+  /** the scooter that knocks you over at the mouth of the alley: seconds since it appeared (-1 = none), when it hits, and which beats have played */
+  const bike = useRef<THREE.Group>(null);
+  const mishap = useRef({ t: -1, t0: 0, hit: 0, thud: false, said: false, engine: false, horn: false });
+  /** the camera backs off and rises a little during the gag, so the road beyond the alley mouth is in frame */
+  const pull = useRef(0);
+  /** 0 → 1 as the scooter closes in: hands go up only when it is almost on you */
+  const startle = useRef(0);
   const entering = useRef(false);
   const camLook = useRef(new THREE.Vector3(0, 1.2, -2));
   const cameFromInside = useRef(false);
@@ -306,7 +327,11 @@ const Player = ({
     let vx = 0;
     let vz = 0;
     const len = Math.hypot(i.x, i.z);
-    if (!paused && len > 0.05) {
+    if (mishap.current.t >= 0) {
+      // first step out of the alley onto the main road, then stand still on the edge of it
+      goal.current = null;
+      if (mishap.current.t < mishap.current.hit - 0.1 && p.z < STEP_OUT - 0.05) vz = 3.4;
+    } else if (!paused && len > 0.05) {
       vx = (i.x / Math.max(1, len)) * 3.8;
       vz = (i.z / Math.max(1, len)) * 3.8;
       goal.current = null;
@@ -329,7 +354,7 @@ const Player = ({
     const speed = vel.current.length();
     const moving = speed > 0.15;
     p.x = clamp(p.x + vel.current.x * dt, -bounds.x, bounds.x);
-    p.z = clamp(p.z + vel.current.y * dt, bounds.zMin, bounds.zMax);
+    p.z = clamp(p.z + vel.current.y * dt, bounds.zMin, mishap.current.t >= 0 || p.z > bounds.zMax ? STEP_OUT : bounds.zMax);
     if (place === null) {
       // the dog is solid too: you walk around it, not through it
       dogSolid.x = dogPos.current.x;
@@ -337,6 +362,13 @@ const Player = ({
       const [cx, cz] = resolveSolids(streetSolids, p.x, p.z, 0.27);
       p.x = cx;
       p.z = cz;
+    }
+    // heading for the mouth of the alley: you carry on walking out onto the main road, a scooter cuts across right in front of you, and you land on your behind.
+    // It starts as you approach, with no wait at the mouth, so the walk never stalls.
+    if (cooldown.current > 0) cooldown.current -= dt;
+    if (place === null && !paused && mishap.current.t < 0 && cooldown.current <= 0 && p.z > bounds.zMax - 0.7 && vz > 0.5) {
+      const t0 = 0.6;
+      mishap.current = { t: 0, t0, hit: t0 + (p.x + 12) / MOTO_SPEED + 0.04, thud: false, said: false, engine: false, horn: false };
     }
     if (moving) face.current = dampAngle(face.current, Math.atan2(vel.current.x, vel.current.y), 10, dt);
     const t = s.clock.elapsedTime;
@@ -361,6 +393,60 @@ const Player = ({
     if (legR.current) legR.current.rotation.x = -sw;
     if (armL.current) armL.current.rotation.x = -sw * 0.9;
     if (armR.current) armR.current.rotation.x = sw * 0.9;
+
+    const m = mishap.current;
+    if (m.t >= 0) {
+      m.t += dt;
+      const bikeX = -12 + (m.t - m.t0) * MOTO_SPEED;
+      if (m.t >= m.t0 && !m.engine) {
+        m.engine = true;
+        motoPass();
+      }
+      if (bike.current) {
+        bike.current.visible = m.t >= m.t0 && m.t < m.hit + 0.6;
+        bike.current.position.set(bikeX, 0, MOTO_LANE);
+      }
+      // the scooter's distance decides the reaction: glance over as it approaches, hands up only when it is almost on you
+      const gap = p.x - bikeX;
+      const coming = m.t < m.hit;
+      // it only beeps once it is close enough to be heading for you
+      if (coming && m.t >= m.t0 && gap < 6.5 && !m.horn) {
+        m.horn = true;
+        honk();
+      }
+      if (coming && m.t >= m.t0 && gap < 9) face.current = dampAngle(face.current, -Math.PI / 2, 14, dt);
+      startle.current = THREE.MathUtils.damp(startle.current, coming && m.t >= m.t0 && gap < 4.5 ? 1 : 0, 30, dt);
+      const down = clamp((m.t - m.hit) / 0.2, 0, 1) * (1 - clamp((m.t - m.hit - 1.9) / 0.35, 0, 1));
+      if (down > 0 && !m.thud) {
+        m.thud = true;
+        thud();
+      }
+      if (m.t > m.hit + 0.25 && !m.said) {
+        m.said = true;
+        onEdge?.(edges.current++);
+      }
+      if (g.current) {
+        g.current.position.y += -0.48 * down + 0.3 * Math.sin(Math.PI * clamp((m.t - m.hit) / 0.3, 0, 1)) * (m.t > m.hit ? 1 : 0);
+        g.current.position.z -= 0.25 * down;
+      }
+      if (body.current) {
+        // the torso and head hang off the feet, the legs off the hips: lean about the hips (y = 0.64) so they stay joined
+        const lean = body.current.rotation.x * (1 - down) - 0.3 * down;
+        body.current.rotation.x = lean;
+        body.current.rotation.z = Math.sin(t * 16) * 0.05 * down;
+        body.current.position.set(0, 0.64 * (1 - Math.cos(lean)), -0.64 * Math.sin(lean));
+      }
+      // blend over the walk cycle so the step out still looks like walking
+      const raise = startle.current * (1 - down);
+      for (const leg of [legL.current, legR.current]) if (leg) leg.rotation.x = leg.rotation.x * (1 - down) - 1.4 * down;
+      for (const arm of [armL.current, armR.current]) if (arm) arm.rotation.x = arm.rotation.x * (1 - raise) * (1 - down) - 2.6 * raise + 0.8 * down;
+      if (m.t > m.hit + 2.25) {
+        mishap.current = { t: -1, t0: 0, hit: 0, thud: false, said: false, engine: false, horn: false };
+        startle.current = 0;
+        cooldown.current = 1.2;
+        goal.current = { x: p.x * 0.5, z: bounds.zMax - 3.5 };
+      }
+    }
 
     let best: string | null = null;
     let bestD = Infinity;
@@ -392,7 +478,8 @@ const Player = ({
     }
 
     if (place === null) {
-      const target = new THREE.Vector3(p.x * 0.45, 3.4, p.z + 6.2);
+      pull.current = THREE.MathUtils.damp(pull.current, mishap.current.t >= 0 && mishap.current.t < mishap.current.hit + 1.6 ? 1 : 0, 3, dt);
+      const target = new THREE.Vector3(p.x * 0.45, 3.4 + 0.5 * pull.current, p.z + 6.2 + 0.8 * pull.current);
       const look = new THREE.Vector3(p.x * 0.7, 1.3, p.z - 2.5);
       if (cameFromInside.current) {
         // back from a shop or the house: arrive on the street camera instead of sweeping across from the interior
@@ -407,7 +494,13 @@ const Player = ({
     }
   });
 
-  return <Avatar ref={g} legL={legL} legR={legR} armL={armL} armR={armR} body={body} />;
+  return (
+    <>
+      <Avatar ref={g} legL={legL} legR={legR} armL={armL} armR={armR} body={body} />
+      <Motorbike ref={bike} speed={MOTO_SPEED} />
+      <Dazed mishap={mishap} pos={pos} />
+    </>
+  );
 };
 
 /* ---------- Scene ---------- */
@@ -420,6 +513,7 @@ export interface WorldProps {
   visited: Set<string>;
   onNear: (id: string | null) => void;
   onInteract: (id: string) => void;
+  onEdge?: (count: number) => void;
   fx: MutableRefObject<Fx>;
   selected: number;
   letterOpen: boolean;
@@ -502,6 +596,7 @@ const Scene = (p: WorldProps) => {
         ))}
 
         <Street />
+        <MainRoad leftH={left[0].depth * 2.5} rightH={right[0].depth * 2.5} />
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, -34]} onPointerDown={(e) => { e.stopPropagation(); p.goal.current = { x: clamp(e.point.x, -2.1, 2.1), z: clamp(e.point.z, -68, 6) }; }} onPointerOver={() => setHover(false)}>
           <planeGeometry args={[6.4, 96]} />
           <meshBasicMaterial transparent opacity={0} depthWrite={false} />
@@ -550,7 +645,7 @@ const Scene = (p: WorldProps) => {
         ))}
 
         {PLACES.map((pl) => (
-          <PlaceMarker key={pl.id} x={Math.sign(pl.pos[0]) * 0.7} z={pl.pos[1] + (pl.id === "gate" ? 4 : 0)} text={pl.label} sub={pl.sub} visited={p.visited.has(pl.id)} onClick={() => walkTo(pl.id)} />
+          <PlaceMarker key={pl.id} x={Math.sign(pl.pos[0]) * 0.7} z={pl.id === "gate" ? POST_OFFICE_SIGN_Z : pl.pos[1]} text={pl.label} sub={pl.sub} visited={p.visited.has(pl.id)} onClick={() => walkTo(pl.id)} />
         ))}
 
         <Plant pos={[-2.9, 0, -3]} s={1.2} />
@@ -579,7 +674,7 @@ const Scene = (p: WorldProps) => {
       {place === "gate" && <GateScene onPick={p.onInteract} open={p.letterOpen} />}
 
       {place === null && (
-        <Player place={place} input={p.input} goal={p.goal} paused={p.paused} pos={pos} onNear={p.onNear} onArrive={p.onInteract} dogPos={dogPos} catPos={catPos} />
+        <Player place={place} input={p.input} goal={p.goal} paused={p.paused} pos={pos} onNear={p.onNear} onArrive={p.onInteract} onEdge={p.onEdge} dogPos={dogPos} catPos={catPos} />
       )}
     </>
   );

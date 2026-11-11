@@ -140,3 +140,65 @@ export const footstep = (indoor: boolean, vol = 1) => {
   src.connect(f).connect(g).connect(c.destination);
   src.start();
 };
+
+/** A scooter shooting past: a buzzing engine that rises as it nears and drops as it leaves. */
+export const motoPass = () => {
+  if (muted) return;
+  const c = ac();
+  const t = c.currentTime;
+  const engine = c.createOscillator();
+  engine.type = "sawtooth";
+  engine.frequency.setValueAtTime(140, t);
+  engine.frequency.linearRampToValueAtTime(260, t + 0.35);
+  engine.frequency.linearRampToValueAtTime(110, t + 0.85);
+  const lp = c.createBiquadFilter();
+  lp.type = "lowpass";
+  lp.frequency.value = 900;
+  const g = c.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.16, t + 0.3);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+  engine.connect(lp).connect(g).connect(c.destination);
+  engine.start(t);
+  engine.stop(t + 0.95);
+};
+
+/** Two short beeps from a scooter horn. */
+export const honk = () => {
+  if (muted) return;
+  const c = ac();
+  const t = c.currentTime;
+  [0, 0.17].forEach((at) => {
+    const horn = c.createOscillator();
+    horn.type = "square";
+    horn.frequency.value = 420;
+    const lp = c.createBiquadFilter();
+    lp.type = "lowpass";
+    lp.frequency.value = 1800;
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.0001, t + at);
+    g.gain.exponentialRampToValueAtTime(0.09, t + at + 0.02);
+    g.gain.setValueAtTime(0.09, t + at + 0.09);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + at + 0.12);
+    horn.connect(lp).connect(g).connect(c.destination);
+    horn.start(t + at);
+    horn.stop(t + at + 0.14);
+  });
+};
+
+/** Landing on your behind: a short low thump. */
+export const thud = () => {
+  if (muted) return;
+  const c = ac();
+  const t = c.currentTime;
+  const o = c.createOscillator();
+  o.type = "sine";
+  o.frequency.setValueAtTime(130, t);
+  o.frequency.exponentialRampToValueAtTime(45, t + 0.18);
+  const g = c.createGain();
+  g.gain.setValueAtTime(0.28, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+  o.connect(g).connect(c.destination);
+  o.start(t);
+  o.stop(t + 0.25);
+};

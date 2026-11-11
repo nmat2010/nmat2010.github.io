@@ -202,7 +202,9 @@ export const Pet = ({
   bounds?: number;
 }) => {
   const g = useRef<THREE.Group>(null);
-  const tail = useRef<THREE.Mesh>(null);
+  const tail = useRef<THREE.Object3D>(null);
+  /** the dog's tail wag phase: advanced by speed so slowing down never jumps the tail */
+  const wag = useRef(0);
   const heart = useRef<THREE.Mesh>(null);
   const cat = kind === "cat";
   const heartMat = useMemo(() => {
@@ -222,7 +224,16 @@ export const Pet = ({
     const t = s.clock.elapsedTime;
     const grp = g.current;
     if (!grp) return;
-    if (tail.current) tail.current.rotation.y = Math.sin(t * (cat ? 2 : 9)) * (cat ? 0.5 : 0.8);
+    const since = t - fx.current[trigger];
+    if (tail.current) {
+      if (cat) tail.current.rotation.y = Math.sin(t * 2) * 0.5;
+      else {
+        // a lazy swish at rest; petted, it swings side to side and settles back over a couple of seconds
+        const glad = Math.max(0, 1 - since / 2);
+        wag.current += dt * (2.5 + 13 * glad);
+        tail.current.rotation.y = Math.sin(wag.current) * (0.14 + 0.78 * glad);
+      }
+    }
     let baseY = home[1];
     if (!cat && dogPos && playerPos) {
       const p = playerPos.current;
@@ -241,8 +252,8 @@ export const Pet = ({
       baseY = moving ? Math.abs(Math.sin(t * 12)) * 0.05 : 0;
       dogPos.current.set(grp.position.x, grp.position.z);
     }
-    const since = t - fx.current[trigger];
-    grp.position.y = baseY + (since < 0.5 ? Math.sin((since / 0.5) * Math.PI) * 0.18 : 0);
+    // the cat hops when petted; the dog wags instead
+    grp.position.y = baseY + (cat && since < 0.5 ? Math.sin((since / 0.5) * Math.PI) * 0.18 : 0);
     if (heart.current) {
       const on = since < 1.2;
       heart.current.visible = on;
@@ -367,10 +378,15 @@ export const Pet = ({
               </mesh>
             )),
           )}
-          <mesh ref={tail} position={[0, 0.52, -0.36]} rotation={[-0.9, 0, 0]}>
-            <capsuleGeometry args={[0.03, 0.24, 4, 8]} />
-            {mat("#c99a5b")}
-          </mesh>
+          {/* the original straight tail, hinged at its base so it can swing side to side */}
+          <group ref={tail} position={[0, 0.427, -0.243]}>
+            <group rotation={[-0.9, 0, 0]}>
+              <mesh position={[0, 0.15, 0]}>
+                <capsuleGeometry args={[0.03, 0.24, 4, 8]} />
+                {mat("#c99a5b")}
+              </mesh>
+            </group>
+          </group>
         </>
       )}
       <mesh ref={heart} visible={false} material={heartMat}>
