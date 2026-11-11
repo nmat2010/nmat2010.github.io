@@ -553,7 +553,7 @@ export default function PlayMode({ onExit, onHome }: { onExit: () => void; onHom
             transition={{ type: "spring", stiffness: 70, damping: 16 }}
             role="dialog"
             aria-label="Experience, in the newspaper"
-            className="vintage-paper newsprint absolute inset-x-2 bottom-2 top-[34%] rounded-[2px] shadow-2xl sm:inset-x-auto sm:left-[3%] sm:top-[6%] sm:w-[min(68%,62rem)] min-[900px]:left-[2%] min-[900px]:w-[min(96%,82rem)]"
+            className="vintage-paper newsprint absolute inset-x-2 bottom-2 top-[11%] rounded-[2px] shadow-2xl sm:inset-x-auto sm:left-[3%] sm:top-[6%] sm:w-[min(68%,62rem)] min-[900px]:left-[2%] min-[900px]:w-[min(96%,82rem)]"
             style={{ transformOrigin: "50% 100%" }}
           >
             <CloseBtn onClick={() => setPaper(false)} label="Put the paper down" />

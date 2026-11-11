@@ -29,8 +29,8 @@ const themeOf = (page: Page, at: number) => {
 };
 
 const Masthead = () => (
-  <header className="mb-6">
-    <div className="flex items-end justify-between gap-3 text-[0.62rem] font-semibold uppercase tracking-[0.16em] sm:text-xs">
+  <header className="mb-4 sm:mb-6">
+    <div className="hidden items-end justify-between gap-3 text-[0.62rem] font-semibold uppercase tracking-[0.16em] sm:flex sm:text-xs">
       <span className="border px-2 py-1" style={{ borderColor: BLUE, color: BLUE }}>
         Special edition
       </span>
@@ -39,9 +39,9 @@ const Masthead = () => (
         Price: one coffee
       </span>
     </div>
-    <div className="mt-2 px-3 py-1.5 text-center" style={{ background: RED }}>
+    <div className="px-3 py-1.5 text-center sm:mt-2" style={{ background: RED }}>
       <p
-        className="font-display text-[clamp(1.9rem,9.5cqw,3.9rem)] font-bold uppercase leading-none tracking-[0.06em]"
+        className="font-display text-[clamp(1.7rem,9.5cqw,3.9rem)] font-bold uppercase leading-none tracking-[0.06em]"
         style={{ color: CREAM, textShadow: `2px 1.5px 0 ${BLUE}` }}
       >
         The Alley Times
@@ -51,7 +51,7 @@ const Masthead = () => (
       className="flex items-center justify-center px-3 py-1 text-center text-[0.6rem] font-semibold uppercase tracking-[0.14em] sm:text-[0.68rem]"
       style={{ background: BLUE, color: CREAM, textShadow: "none" }}
     >
-      <span>★ Experience news · Báo Hẻm · read over coffee ★</span>
+      <span>Experience news · Báo Hẻm · read over coffee</span>
     </div>
     <div className="h-1.5" style={{ background: `repeating-linear-gradient(90deg, ${RED} 0 14px, ${CREAM} 14px 28px, ${BLUE} 28px 42px)` }} />
   </header>
@@ -251,7 +251,7 @@ const PageSheet = ({
   const theme = themeOf(page, at);
   return (
     <div
-      className={`flex h-full min-h-0 flex-col pt-5 [container-type:inline-size] sm:pt-7 ${side ? "px-5 sm:px-7" : "px-5 sm:px-9"}`}
+      className={`flex h-full min-h-0 flex-col pt-3 [container-type:inline-size] sm:pt-7 ${side ? "px-5 sm:px-7" : "px-4 sm:px-9"}`}
       style={{ "--ink": theme.ink, "--ink2": theme.ink2, background: theme.tint } as CSSProperties}
     >
       <div
@@ -261,7 +261,7 @@ const PageSheet = ({
         <span>{side === "right" ? `Page ${at + 1}` : "The Alley Times"}</span>
         <span>{side === "left" ? `Page ${at + 1}` : side === "right" ? "The Alley Times" : `Page ${at + 1} of ${pages.length}`}</span>
       </div>
-      <div ref={el} className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pb-4 pr-1 pt-5">
+      <div ref={el} className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pb-4 pr-1 pt-4 sm:pt-5">
         {page.kind === "story" && <Story exp={page.exp} first={at === 0} />}
         {page.kind === "highlights" && <Highlights exp={page.exp} />}
         {page.kind === "details" && isCategorised(page.exp.highlights) && <Details sections={page.exp.highlights} />}
@@ -470,7 +470,7 @@ export const ExperienceNewspaper = ({ onTurn, onClose }: { onTurn?: () => void; 
         {turn && leaf && <Leaf key={`${turn.from}-${turn.to}`} dir={turn.dir} spread={spread} front={leaf.front} back={leaf.back} onDone={finish} calm={calm} />}
       </div>
 
-      <nav aria-label="Pages" className="flex items-center gap-2 border-t border-[#2a2118] px-5 pb-5 pt-3 sm:px-9 sm:pb-7">
+      <nav aria-label="Pages" className="flex items-center gap-2 border-t border-[#2a2118] px-4 pb-3 pt-2 sm:px-9 sm:pb-7 sm:pt-3">
         <button
           onClick={() => go(L - step)}
           disabled={L === 0}

@@ -193,10 +193,15 @@
     text-transform: uppercase;
     letter-spacing: 0.02em;
     line-height: 1.08;
-    font-size: clamp(1.35rem, 2.6vw, 1.85rem);
+    font-size: clamp(1.5rem, 2.6vw, 1.85rem);
     color: var(--ink, #1d150d);
-    /* a second ink printed a hair off register */
-    text-shadow: 1.5px 1px 0 var(--ink2, rgba(29, 21, 13, 0.35));
+    /* a second ink printed a hair off register (only where the type is big enough to carry it) */
+    text-shadow: none;
+  }
+  @media (min-width: 640px) {
+    .vintage-paper .np-headline {
+      text-shadow: 1.5px 1px 0 var(--ink2, rgba(29, 21, 13, 0.35));
+    }
   }
   .vintage-paper .np-deck {
     font-family: "Newsreader", Georgia, serif;
@@ -238,14 +243,27 @@
   /* Printed graphics for the Experience news: a halftone logo plate, boxed figures, a five-step diagram */
   /* a story's text and its logo plate sit side by side once the page (not the screen) is wide enough */
   .np-story-plate {
-    width: 7rem;
+    width: 100%;
+  }
+  /* narrow page: the logo sits beside its caption instead of squeezing the caption into a sliver */
+  .np-story-plate .np-plate {
+    display: grid;
+    grid-template-columns: 7rem 1fr;
+    align-items: center;
+    column-gap: 0.9rem;
+  }
+  .np-story-plate .np-cap {
+    margin-top: 0;
   }
   @container (min-width: 34rem) {
     .np-story {
       grid-template-columns: 1fr 9.5rem;
     }
-    .np-story-plate {
-      width: 100%;
+    .np-story-plate .np-plate {
+      display: block;
+    }
+    .np-story-plate .np-cap {
+      margin-top: 0.375rem;
     }
   }
   .vintage-paper .np-dropcap::first-letter {
