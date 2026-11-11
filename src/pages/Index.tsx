@@ -1,11 +1,11 @@
 import { Suspense, lazy, useEffect, useState } from "react";
-import { Navigation } from "@/components/Navigation";
-import { ViewHero } from "@/components/ViewHero";
-import { AboutSection } from "@/components/AboutSection";
-import { ExperienceSection } from "@/components/ExperienceSection";
-import { WorkSection } from "@/components/WorkSection";
-import { ContactSection } from "@/components/ContactSection";
-import { Footer } from "@/components/Footer";
+import { Navigation } from "@/components/view/Navigation";
+import { ViewHero } from "@/components/view/ViewHero";
+import { AboutSection } from "@/components/view/AboutSection";
+import { ExperienceSection } from "@/components/view/ExperienceSection";
+import { WorkSection } from "@/components/view/WorkSection";
+import { ContactSection } from "@/components/view/ContactSection";
+import { Footer } from "@/components/view/Footer";
 import { ModeGate } from "@/components/ModeGate";
 
 const PlayMode = lazy(() => import("@/play/PlayMode"));

@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type 
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
 import { ArrowLeft, ArrowRight, Plus } from "lucide-react";
 import { experiences, isCategorised, type Experience, type ExperienceCategory } from "@/data/experience";
-import { LogoPlate, StatStrip } from "./ExperienceGraphics";
+import { LogoPlate, StatStrip } from "@/components/shared/ExperienceGraphics";
 
 type Page = { label: string; exp: Experience; kind: "story" | "highlights" | "details" };
 

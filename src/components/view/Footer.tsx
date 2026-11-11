@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FeedbackDialog } from "./FeedbackDialog";
+import { FeedbackDialog } from "@/components/shared/FeedbackDialog";
 
 export const Footer = () => {
   const [feedback, setFeedback] = useState(false);

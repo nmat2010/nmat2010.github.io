@@ -1,9 +1,9 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Section } from "./Section";
+import { Section } from "@/components/view/Section";
 import { experiences, isCategorised } from "@/data/experience";
-import { StatStrip } from "./ExperienceGraphics";
+import { StatStrip } from "@/components/shared/ExperienceGraphics";
 
 /** The plain expandable list of roles, for View mode. Play mode prints the same data as a newspaper, so both show the same facts: the story, the figures, the highlights and the details. */
 export const ExperienceBody = () => {

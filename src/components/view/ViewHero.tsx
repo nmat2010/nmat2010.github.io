@@ -1,6 +1,6 @@
 import { useState } from "react";
 import profileImg from "@/assets/profile.jpeg";
-import { ResumeDialog } from "./ResumeDialog";
+import { ResumeDialog } from "@/components/shared/ResumeDialog";
 
 export const ViewHero = ({ onPlay }: { onPlay: () => void }) => {
   const [resume, setResume] = useState(false);

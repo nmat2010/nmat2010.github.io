@@ -1,4 +1,4 @@
-import { Section } from "./Section";
+import { Section } from "@/components/view/Section";
 import { focusAreas, researchInterests } from "@/data/about";
 
 export const AboutBody = () => (

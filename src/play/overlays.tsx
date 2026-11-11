@@ -3,8 +3,8 @@ import { Check, FileDown, FileText, ScrollText, Swords, Trash2, X } from "lucide
 import { AnimatePresence, motion } from "framer-motion";
 import { dishes } from "@/data/food";
 import { aboutParagraphs, aboutStatement, awayParagraph, focusAreas } from "@/data/about";
-import { tileBackground } from "@/components/tilePattern";
-import { ResumeDialog } from "@/components/ResumeDialog";
+import { tileBackground } from "@/components/shared/tilePattern";
+import { ResumeDialog } from "@/components/shared/ResumeDialog";
 
 /** Types text out one character at a time; call finish() to show it all */
 const useTypewriter = (text: string, speed: number, restartKey: string) => {

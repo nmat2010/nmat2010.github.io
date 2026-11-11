@@ -671,7 +671,6 @@ export const CoffeeGlass = forwardRef<THREE.Group, { phin?: boolean }>(({ phin =
         32,
       );
     return [layer(0.028, 0.09), layer(0.09, 0.135), layer(0.135, 0.255)];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const ice: [number, number, number, number][] = [
     [-0.03, 0.15, 0.02, 0.2],

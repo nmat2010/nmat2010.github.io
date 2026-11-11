@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { Section } from "./Section";
+import { Section } from "@/components/view/Section";
 import { projects } from "@/data/projects";
 
 /** A project photograph pasted to the card; it tips toward the pointer. */

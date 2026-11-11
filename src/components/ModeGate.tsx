@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import profileImg from "@/assets/profile.jpeg";
-import { tileBackground } from "./tilePattern";
+import { tileBackground } from "@/components/shared/tilePattern";
 
 const hasWebGL = () => {
   try {
