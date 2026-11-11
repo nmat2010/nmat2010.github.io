@@ -8,6 +8,7 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
+    "resume": "cd resume && pdflatex -interaction=nonstopmode -halt-on-error resume.tex && cp resume.pdf ../public/resume.pdf",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"

@@ -3,8 +3,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Section } from "./Section";
 import { experiences, isCategorised } from "@/data/experience";
+import { StatStrip } from "./ExperienceGraphics";
 
-/** The plain expandable list of roles, for View mode. Play mode prints the same data as a newspaper. */
+/** The plain expandable list of roles, for View mode. Play mode prints the same data as a newspaper, so both show the same facts: the story, the figures, the highlights and the details. */
 export const ExperienceBody = () => {
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [expandedSubsections, setExpandedSubsections] = useState<{ [key: string]: boolean }>({});
@@ -38,6 +39,11 @@ export const ExperienceBody = () => {
                   <span className="block">{exp.location}</span>
                 </span>
                 <span className="block">
+                  {exp.localTitle && (
+                    <span className="block font-display text-xs font-semibold uppercase tracking-[0.14em] text-card-foreground/70 md:text-sm">
+                      {exp.localTitle}
+                    </span>
+                  )}
                   <span className="np-headline block text-xl md:text-2xl font-bold tracking-[-0.02em] [font-stretch:92%] group-hover:text-lantern transition-colors">
                     {exp.title}
                   </span>
@@ -61,6 +67,7 @@ export const ExperienceBody = () => {
                     className="overflow-hidden"
                   >
                     <div className={`pb-8 space-y-8 md:pl-[4.25rem]`}>
+                      {exp.stats && <StatStrip stats={exp.stats} />}
                       {exp.tldr && (
                         <div className="border-l border-card-foreground/40 pl-5">
                           <h4 className="np-subhead font-semibold mb-3">Key highlights</h4>

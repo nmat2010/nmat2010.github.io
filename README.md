@@ -29,6 +29,7 @@ npm run deploy     # builds and publishes dist/ to GitHub Pages
 | `src/data/` | All the content: about, experience, projects (with demo video ids), contact, food photos. Edit here. |
 | `src/components/` | Landing page (`ModeGate`), View mode sections, navigation. |
 | `src/play/` | Play mode: `PlayMode` (HUD, overlays, input), `World` (scene, player, collisions), `Street` (alley buildings and stalls), `home` (first-person house), `scenes` (café, workshop, bookshop, post office), `parts` (characters), `textures`, `audio` (synthesized sounds), `gfx` (model and texture loading). |
+| `resume/resume.tex` | The resume. The deploy workflow compiles it to `public/resume.pdf` on every push to `main`, so edit the `.tex` and push: no PDF is ever committed. For a local preview, `npm run resume` builds it too (needs a LaTeX install; the in-site viewer and every resume link read `/resume.pdf`). |
 | `public/assets/` | 3D models, PBR textures and the sky HDRI from [Poly Haven](https://polyhaven.com) (CC0). |
 | `public/dishes/` | Web-sized food photos. Originals live in the git-ignored `food-originals/`. |
 

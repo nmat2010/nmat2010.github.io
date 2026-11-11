@@ -35,3 +35,5 @@ PRODUCT.md
 DESIGN.md
 food-originals/
 resume/resume.pdf
+# built from resume/resume.tex by the deploy workflow (or `npm run resume`); never committed
+public/resume.pdf

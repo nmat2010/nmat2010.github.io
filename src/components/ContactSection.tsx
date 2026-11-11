@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { MessageSquare } from "lucide-react";
 import { FeedbackDialog } from "./FeedbackDialog";
+import { ResumeDialog } from "./ResumeDialog";
 import { Section } from "./Section";
-import { contactLinks, email } from "@/data/contact";
+import { contactLinks, email, resumeUrl } from "@/data/contact";
 
-export const ContactBody = () => (
+export const ContactBody = () => {
+  const [resume, setResume] = useState(false);
+  return (
   <>
     <p className="font-script text-4xl leading-tight md:text-5xl">Dear friend,</p>
     <div className="mt-5 max-w-[46ch] space-y-3 font-serif text-xl leading-relaxed md:text-2xl">
@@ -20,18 +23,27 @@ export const ContactBody = () => (
       {email}
     </a>
     <div className="mt-6 flex flex-wrap gap-x-8 gap-y-3 text-sm font-semibold">
-      {contactLinks.map((link) => (
-        <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" className="link-card">
-          {link.label}
-        </a>
-      ))}
+      {contactLinks.map((link) =>
+        link.href === resumeUrl ? (
+          // the resume opens in the site's own viewer, with download and open-in-new-tab inside it
+          <button key={link.label} onClick={() => setResume(true)} className="link-card">
+            {link.label}
+          </button>
+        ) : (
+          <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" className="link-card">
+            {link.label}
+          </a>
+        ),
+      )}
     </div>
     <div className="mt-10 border-t border-card-foreground/25 pt-5">
       <p className="font-script text-3xl leading-tight">Warmly, Thu</p>
       <p className="mt-1 font-serif text-base text-card-foreground/75">Cảm ơn bạn đã ghé thăm.</p>
     </div>
+    {resume && <ResumeDialog onClose={() => setResume(false)} />}
   </>
-);
+  );
+};
 
 /** View mode's contact board: the letter, plus a way to leave a message without an email app. */
 export const ContactSection = () => {

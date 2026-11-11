@@ -1,6 +1,10 @@
+import { useState } from "react";
 import profileImg from "@/assets/profile.jpeg";
+import { ResumeDialog } from "./ResumeDialog";
 
-export const ViewHero = ({ onPlay }: { onPlay: () => void }) => (
+export const ViewHero = ({ onPlay }: { onPlay: () => void }) => {
+  const [resume, setResume] = useState(false);
+  return (
   <section id="hero" className="relative overflow-hidden px-6">
     <div className="max-w-5xl mx-auto pt-28 pb-16 md:pt-36 md:pb-24 grid md:grid-cols-[1fr_auto] gap-10 md:gap-16 items-center">
       <div>
@@ -17,14 +21,12 @@ export const ViewHero = ({ onPlay }: { onPlay: () => void }) => (
           Computer engineering at Stony Brook. Building AI infrastructure, and studying the policy and law around it.
         </p>
         <div className="rise-in mt-8 flex flex-wrap items-center gap-x-8 gap-y-4" style={{ ["--d" as string]: "0.4s" }}>
-          <a
-            href="/resume.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() => setResume(true)}
             className="rounded-md bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition-colors hover:bg-lantern hover:text-white"
           >
             View resume
-          </a>
+          </button>
           <a href="#contact" className="link-ink text-sm font-semibold">
             Get in touch
           </a>
@@ -40,5 +42,7 @@ export const ViewHero = ({ onPlay }: { onPlay: () => void }) => (
         style={{ ["--d" as string]: "0.3s" }}
       />
     </div>
+    {resume && <ResumeDialog onClose={() => setResume(false)} />}
   </section>
-);
+  );
+};

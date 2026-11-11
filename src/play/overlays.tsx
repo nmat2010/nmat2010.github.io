@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { dishes } from "@/data/food";
 import { aboutParagraphs, aboutStatement, awayParagraph, focusAreas } from "@/data/about";
 import { tileBackground } from "@/components/tilePattern";
+import { ResumeDialog } from "@/components/ResumeDialog";
 
 /** Types text out one character at a time; call finish() to show it all */
 const useTypewriter = (text: string, speed: number, restartKey: string) => {
@@ -136,6 +137,7 @@ export const LaptopScreen = ({ onClose }: { onClose: () => void }) => {
   const [boot, setBoot] = useState(0);
   const [open, setOpen] = useState<WinId[]>([]);
   const [now, setNow] = useState(() => new Date());
+  const [resumeOpen, setResumeOpen] = useState(false);
   const area = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -211,17 +213,15 @@ export const LaptopScreen = ({ onClose }: { onClose: () => void }) => {
                   {label}
                 </motion.button>
               ))}
-              <a
-                href="/resume.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() => setResumeOpen(true)}
                 className="flex w-24 flex-col items-center gap-1 rounded p-1.5 text-center text-xs font-semibold text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.8)] hover:bg-white/15 sm:w-28 sm:text-sm"
               >
                 <span className="grid h-11 w-11 place-items-center rounded-md border-2 border-[#2a2118] bg-[#f6eed8] text-[#2a2118] sm:h-12 sm:w-12">
                   <FileDown className="h-6 w-6" aria-hidden="true" />
                 </span>
                 resume.pdf
-              </a>
+              </button>
             </nav>
 
             {open.map((id, i) => (
@@ -269,6 +269,8 @@ export const LaptopScreen = ({ onClose }: { onClose: () => void }) => {
               <img src="/seawolves-logo.svg" alt="Stony Brook Seawolf" className="seawolf-bob h-16 w-auto drop-shadow-[0_3px_0_rgba(255,255,255,0.9)] sm:h-24" />
             </motion.div>
           </div>
+
+          {resumeOpen && <ResumeDialog onClose={() => setResumeOpen(false)} />}
 
           {/* taskbar */}
           <footer className="relative z-30 flex items-center gap-2 bg-[#f1e6cf] px-3 py-1.5 text-sm font-semibold shadow-[0_-2px_0_#2a2118]">
